@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bilingual Quiz: React Fundamentals (50 Questions) | اختبار أساسيات رياكت</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;600;700;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --accent: #f59e0b;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', 'Inter', sans-serif;
+        }
+
+        code, pre {
+            font-family: 'Fira Code', monospace;
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.92em;
+            color: #0284c7;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #0369a1 100%);
+            color: white;
+            padding: 26px 20px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.25);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 1.7rem;
+            font-weight: 900;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            color: #e0f2fe;
+            direction: ltr;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: block;
+        }
+
+        .stat-val {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-val.high {
+            color: var(--accent);
+        }
+
+        /* Index Button */
+        .btn-index {
+            background: #f0f9ff;
+            color: var(--primary);
+            border: 2px solid #bae6fd;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-index:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s ease;
+        }
+
+        /* Question Box */
+        .q-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 10px 20px -3px rgba(0,0,0,0.06);
+            margin-bottom: 24px;
+        }
+
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .q-badge {
+            background: #f0f9ff;
+            color: var(--primary);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .q-text-ar {
+            font-size: 1.25rem;
+            font-weight: 800;
+            line-height: 1.8;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+
+        .q-text-en {
+            font-size: 1.05rem;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #475569;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+            border-left: 3px solid var(--primary);
+            padding-left: 12px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .opt-btn {
+            background: #f8fafc;
+            border: 2px solid var(--border);
+            padding: 14px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            text-align: right;
+        }
+
+        .opt-btn:hover:not(:disabled) {
+            background: #f0f9ff;
+            border-color: #7dd3fc;
+            transform: translateX(-4px);
+        }
+
+        .opt-btn.correct {
+            background: #dcfce7 !important;
+            border-color: var(--success) !important;
+        }
+
+        .opt-btn.wrong {
+            background: #fee2e2 !important;
+            border-color: var(--danger) !important;
+        }
+
+        .opt-ar {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .opt-en {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #64748b;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .opt-btn.correct .opt-ar, .opt-btn.correct .opt-en {
+            color: #15803d !important;
+        }
+
+        .opt-btn.wrong .opt-ar, .opt-btn.wrong .opt-en {
+            color: #991b1b !important;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 0.98rem;
+            line-height: 1.7;
+            display: none;
+            background: #f1f5f9;
+            border-right: 5px solid var(--primary);
+        }
+
+        .exp-en {
+            direction: ltr;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+            color: #334155;
+            margin-top: 6px;
+            font-size: 0.92rem;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+        }
+
+        .btn-nav {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-nav:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-nav:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        /* Modal Index */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 750px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 26px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+            animation: popIn 0.25s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .close-btn {
+            background: #f1f5f9;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+        }
+
+        .close-btn:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+        }
+
+        .grid-index {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .index-pill {
+            background: #f8fafc;
+            border: 2px solid var(--border);
+            padding: 10px 4px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            color: #334155;
+        }
+
+        .index-pill:hover {
+            border-color: var(--primary);
+            background: #f0f9ff;
+            transform: translateY(-2px);
+        }
+
+        .index-pill.active {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+            font-weight: 900;
+        }
+
+        .index-pill.solved-correct {
+            background: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #15803d !important;
+        }
+
+        .index-pill.solved-wrong {
+            background: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #b91c1c !important;
+        }
+
+        /* Results Card */
+        .results-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .trophy {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: #f0f9ff;
+            border: 6px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+        }
+
+        .score-num {
+            font-size: 2.4rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .btn-restart {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 14px 34px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: 0.2s;
+        }
+
+        .btn-restart:hover {
+            transform: scale(1.03);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>اختبار أساسيات React الشامل ثنائي اللغة (50 سؤالاً)</h1>
+        <p>Bilingual Quiz: React Components, Props, Events, State & Hooks</p>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span class="stat-label">رقم السؤال / Question</span>
+            <div><span class="stat-val" id="qCurrent">1</span> / 50</div>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">أول محاولة / 1st Score 🎯</span>
+            <span class="stat-val" style="color: #0284c7;" id="firstScore">--</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">الدرجة الحالية / Score</span>
+            <span class="stat-val" id="score">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">أعلى نتيجة / High Score 🏆</span>
+            <span class="stat-val high" id="highScore">0</span>
+        </div>
+        <div>
+            <button class="btn-index" onclick="openIndexModal()">
+                <span>📑</span>
+                <span>فهرس الأسئلة (1-50)</span>
+            </button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <!-- Question Box -->
+    <div class="q-card" id="quizCard">
+        <div class="q-header">
+            <span class="q-badge" id="topicBadge">React Concept</span>
+            <span style="color: var(--text-muted); font-size: 0.9rem;" id="qStatusIndicator">لم يُجب بعد / Not answered</span>
+        </div>
+        
+        <div class="q-text-ar" id="questionTextAr">جاري تحميل السؤال...</div>
+        <div class="q-text-en" id="questionTextEn">Loading question...</div>
+        
+        <div class="options-list" id="optionsContainer"></div>
+        
+        <div class="explanation" id="explanationText"></div>
+
+        <div class="actions">
+            <button class="btn-nav" id="prevBtn" onclick="prevQuestion()" disabled>➡️ السابق / Prev</button>
+            <button class="btn-nav" id="nextBtn" onclick="nextQuestion()">التالي / Next ⬅️</button>
+        </div>
+    </div>
+
+    <!-- Results Box -->
+    <div class="results-card" id="resultsCard">
+        <div class="trophy" id="trophyIcon">🎉</div>
+        <h2 id="resultMsg" style="font-size: 1.8rem; margin-bottom: 8px;">أحسنت صنعاً!</h2>
+        <p id="resultSubtitle" style="color: var(--text-muted);">You completed all 50 React questions!</p>
+        
+        <div class="score-circle">
+            <div class="score-num" id="finalScore">0</div>
+            <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">/ 50</span>
+        </div>
+
+        <p id="highScoreNotice" style="font-weight: 700; font-size: 1.1rem; color: var(--accent); margin-top: 10px;"></p>
+
+        <button class="btn-restart" onclick="restartQuiz()">إعادة الاختبار من البداية 🔄</button>
+    </div>
+</div>
+
+<!-- Modal Index Window -->
+<div class="modal-overlay" id="indexModal" onclick="closeIndexModalOnOutside(event)">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📑 فهرس أسئلة React (Question Index)</h3>
+            <button class="close-btn" onclick="closeIndexModal()">✕</button>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background: #22c55e;"></div><span>إجابة صحيحة</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background: #ef4444;"></div><span>إجابة خاطئة</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background: #0284c7;"></div><span>السؤال الحالي</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background: #e2e8f0; border: 1px solid #cbd5e1;"></div><span>لم يُحل بعد</span></div>
+        </div>
+
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">انقر على أي رقم سؤال للانتقال إليه مباشرة:</p>
+        
+        <div class="grid-index" id="gridIndexContainer"></div>
+    </div>
+</div>
+
+<script>
+    // 50 Questions covering all topics from the code snippets with balanced answer distribution
+    const questions = [
+        // 1. JSX Expressions
+        {
+            topic: "JSX - Dynamic Values",
+            ar_q: "لكتابة متغير أو تعبير جافاسكريبت داخل كود JSX مثل {name}، ما الأقواس المستخدمة؟",
+            en_q: "To embed a JavaScript variable or expression inside JSX like {name}, which brackets are used?",
+            options: [
+                { ar: "الأقواس المعقوفة المفردة { }", en: "Single curly braces { }" },
+                { ar: "الأقواس المربعة [ ]", en: "Square brackets [ ]" },
+                { ar: "الأقواس الدائرية ( )", en: "Parentheses ( )" },
+                { ar: "الأقواس المزدوجة {{ }}" , en: "Double curly braces {{ }}" }
+            ],
+            correct: 0,
+            exp_ar: "نستخدم الأقواس المعقوفة المفردة {} لتضمين أي تعبير جافاسكريبت داخل JSX.",
+            exp_en: "Single curly braces {} are used to evaluate JS variables and expressions inside JSX."
+        },
+        {
+            topic: "JSX - Arithmetic Expressions",
+            ar_q: "ما الناتج الذي سيظهر على الشاشة من الكود التالي: <h2>3 + 2 = {3 + 2}</h2>؟",
+            en_q: "What output is rendered on the screen by: <h2>3 + 2 = {3 + 2}</h2>?",
+            options: [
+                { ar: "3 + 2 = {3 + 2}", en: "3 + 2 = {3 + 2}" },
+                { ar: "3 + 2 = 5", en: "3 + 2 = 5" },
+                { ar: "5 = 5", en: "5 = 5" },
+                { ar: "3 + 2 = 32", en: "3 + 2 = 32" }
+            ],
+            correct: 1,
+            exp_ar: "الجزء خارج الأقواس يطبع كنص ثابت بينما داخل {3 + 2} يتم حسابه ليعطي 5.",
+            exp_en: "Text outside braces prints as literal text, while {3 + 2} is evaluated to 5."
+        },
+        {
+            topic: "JSX - Function Call",
+            ar_q: "إذا كانت لدينا دالة n() ترجع 'ali'، فماذا يعرض السطر: <p>{n()}</p>؟",
+            en_q: "If function n() returns 'ali', what does <p>{n()}</p> display in the DOM?",
+            options: [
+                { ar: "طباعة نص كود الدالة نفسه", en: "Prints the function definition code" },
+                { ar: "حدوث خطأ لأن الدوال لا تستدعى داخل JSX", en: "Throws an error as functions cannot be called in JSX" },
+                { ar: "طباعة النص 'ali'", en: "Renders the text 'ali'" },
+                { ar: "طباعة 'n()'", en: "Prints 'n()'" }
+            ],
+            correct: 2,
+            exp_ar: "يتم تنفيذ الدالة n() وطباعة القيمة المرجعة منها وهي 'ali'.",
+            exp_en: "The function n() is invoked and its returned string 'ali' is rendered."
+        },
+        {
+            topic: "JSX - Fragments",
+            ar_q: "ما الفائدة الأساسية من استخدام React Fragment بالشكل المختصر <> </>؟",
+            en_q: "What is the primary benefit of using React Fragments with the shorthand <> </>?",
+            options: [
+                { ar: "إضافة خلفية ملونة للعناصر", en: "Adding background styling to elements" },
+                { ar: "تسريع تحميل ملفات CSS", en: "Accelerating CSS file loading" },
+                { ar: "حفظ قيم المتغيرات محلياً", en: "Persisting variable values locally" },
+                { ar: "تجميع عدة عناصر دون إضافة وسم div زائد إلى الـ DOM", en: "Grouping multiple elements without adding an extra node to the DOM" }
+            ],
+            correct: 3,
+            exp_ar: "يتيح Fragment تجميع عناصر متعددة كعنصر جذر واحد دون إنشاء وسم زائد بالمتصفح.",
+            exp_en: "Fragments group child elements without adding extra wrapper nodes to the DOM."
+        },
+
+        // 2. Props
+        {
+            topic: "Props - Passing Attributes",
+            ar_q: "عند استدعاء المكون: <Hello name='Ali' age={15}/>، لماذا كُتبت 15 بين { } بينما 'Ali' بين علامتي تنصيص؟",
+            en_q: "In <Hello name='Ali' age={15}/>, why is 15 enclosed in { } while 'Ali' is in quotes?",
+            options: [
+                { ar: "لأن 15 قيمة رقمية وتحتاج تعبير JS بينما 'Ali' نص صريح", en: "Because 15 is a number needing JS expression while 'Ali' is a string literal" },
+                { ar: "لأن النصوص لا يمكن تمريرها في React", en: "Because strings cannot be passed in React" },
+                { ar: "لأن الأرقام لا تُقبل إلا داخل مصفوفات", en: "Because numbers are only accepted inside arrays" },
+                { ar: "كلاهما يمكن كتابته بنفس الطريقة دون أي فرق", en: "Both can be written either way without difference" }
+            ],
+            correct: 0,
+            exp_ar: "النصوص يمكن تمريرها بعلامات تنصيص مباشرة، بينما الأرقام والمتغيرات والقيم المنطقية تتطلب {}.",
+            exp_en: "String literals can use quotes, but numbers, booleans, and objects require curly braces {}."
+        },
+        {
+            topic: "Props - Receiving as Object",
+            ar_q: "إذا استقبل المكون المدخل ككائن data في function Hello(data)، كيف نصل لخاصية name؟",
+            en_q: "If component Hello receives props as an object in function Hello(data), how is 'name' accessed?",
+            options: [
+                { ar: "data[name]", en: "data[name]" },
+                { ar: "data.name", en: "data.name" },
+                { ar: "data->name", en: "data->name" },
+                { ar: "name(data)", en: "name(data)" }
+            ],
+            correct: 1,
+            exp_ar: "تستقبل المكونات كائن props، فيمكن الوصول لخصائصه عبر data.name.",
+            exp_en: "Props are passed as a JavaScript object, so properties are accessed via dot notation: data.name."
+        },
+        {
+            topic: "Props - Destructuring",
+            ar_q: "ماذا يسمى استخراج الخصائص مباشرة في مدخلات الدالة: function Hello({name, age})؟",
+            en_q: "What is extracting properties directly in the parameter list function Hello({name, age}) called?",
+            options: [
+                { ar: "تفكيك الكائنات (Object Destructuring)", en: "Object Destructuring" },
+                { ar: "الدمج التلقائي (Auto Merge)", en: "Auto Merge" },
+                { ar: "الوراثة (Inheritance)", en: "Inheritance" },
+                { ar: "الربط الشرطي (Conditional Binding)", en: "Conditional Binding" }
+            ],
+            correct: 0,
+            exp_ar: "تفكيك الكائنات (Destructuring) يتيح استخراج المتغيرات name و age مباشرة دون كتابة props.name.",
+            exp_en: "Object Destructuring extracts keys from the incoming props object directly into local variables."
+        },
+        {
+            topic: "Props - Passing Arrays",
+            ar_q: "لتمرير مصفوفة كخاصية لمكون: <Hello data={['Ali', 15, 'green']}/>، ما نوع الخاصية data؟",
+            en_q: "In <Hello data={['Ali', 15, 'green']}/>, what is the data type of the prop 'data'?",
+            options: [
+                { ar: "سلسلة نصية مفردة (String)", en: "Single String" },
+                { ar: "قيمة منطقية (Boolean)", en: "Boolean" },
+                { ar: "مصفوفة جافاسكريبت (Array)", en: "JavaScript Array" },
+                { ar: "دالة مجهولة (Anonymous function)", en: "Anonymous function" }
+            ],
+            correct: 2,
+            exp_ar: "تم تمرير مصفوفة تحتوي على عناصر متعددة (نص، رقم، نص).",
+            exp_en: "An Array containing multiple items (string, number, string) was passed via curly braces."
+        },
+
+        // 3. Rendering Lists
+        {
+            topic: "Lists - map method",
+            ar_q: "ما الدالة المستخدمة لتحويل عناصر مصفوفة إلى عناصر JSX مثل: data.map(x => <li>{x}</li>)؟",
+            en_q: "Which method is used to transform array items into JSX elements like data.map(x => <li>{x}</li>)?",
+            options: [
+                { ar: "forEach()", en: "forEach()" },
+                { ar: "filter()", en: "filter()" },
+                { ar: "map()", en: "map()" },
+                { ar: "reduce()", en: "reduce()" }
+            ],
+            correct: 2,
+            exp_ar: "تُستخدم دالة map() لأنها ترجع مصفوفة جديدة تحتوي على عناصر JSX التي يستطيع React عرضها.",
+            exp_en: "map() returns a new array of JSX elements, making it ideal for rendering lists in React."
+        },
+        {
+            topic: "Lists - map return",
+            ar_q: "لماذا لا نفضل استخدام data.forEach() لعرض القوائم مباشرة داخل كود JSX؟",
+            en_q: "Why do we avoid using data.forEach() to render list elements directly inside JSX?",
+            options: [
+                { ar: "لأن forEach لا تدعم المصفوفات", en: "Because forEach does not support arrays" },
+                { ar: "لأنها ترجع undefined ولا ترجع عناصر جديدة لعرضها", en: "Because it returns undefined and does not return elements to render" },
+                { ar: "لأنها تحذف عناصر القائمة", en: "Because it deletes list items" },
+                { ar: "لأنها بطيئة جداً ولا تعمل في المتصفح", en: "Because it is unsupported in modern browsers" }
+            ],
+            correct: 1,
+            exp_ar: "دالة forEach() لا ترجع أي قيمة (ترجع undefined)، بينما JSX يحتاج مصفوفة عناصر تُرجعها map().",
+            exp_en: "forEach() returns undefined, whereas JSX requires an array of elements returned by map()."
+        },
+
+        // 4. Conditional Rendering
+        {
+            topic: "Conditional - Ternary Operator",
+            ar_q: "في الكود: active ? '✅' : '❌'، ماذا يعرض هذا التعبير إذا كانت قيمة active تساوي true؟",
+            en_q: "In active ? '✅' : '❌', what is rendered if the value of active is true?",
+            options: [
+                { ar: "علامة ✅", en: "The ✅ icon" },
+                { ar: "علامة ❌", en: "The ❌ icon" },
+                { ar: "كلاهما معاً", en: "Both icons together" },
+                { ar: "لا شيء", en: "Nothing" }
+            ],
+            correct: 0,
+            exp_ar: "المعامل الشرطي الثلاثي (Ternary Operator) يعيد القيمة الأولى بعد ? عند تحقق الشرط true.",
+            exp_en: "The ternary operator returns the value after ? when the condition evaluates to true."
+        },
+        {
+            topic: "Conditional - Logical AND",
+            ar_q: "ماذا يعني التعبير: {show && <h1>Hello</h1>} في React؟",
+            en_q: "What does the expression {show && <h1>Hello</h1>} mean in React?",
+            options: [
+                { ar: "عرض Hello دائماً بصرف النظر عن قيمة show", en: "Always renders Hello regardless of show" },
+                { ar: "عرض Hello فقط عندما تكون قيمة show تساوي true", en: "Renders Hello only when show is true" },
+                { ar: "حذف وسم h1 نهائياً من الكود", en: "Deletes the h1 tag permanently" },
+                { ar: "عرض كلمة show بجانب Hello", en: "Prints the word 'show' next to Hello" }
+            ],
+            correct: 1,
+            exp_ar: "المعامل المنطقي && يقوم بالعرض المشروط (Short-circuit): يعرض العنصر إذا كان الطرف الأول true.",
+            exp_en: "The && operator conditionally renders the right-hand element only if the left-hand condition is truthy."
+        },
+        {
+            topic: "Conditional - Boolean Toggle",
+            ar_q: "لعكس قيمة حالة بوليانية show من true إلى false والعكس، ما الأمر المستخدم؟",
+            en_q: "To toggle a boolean state variable 'show' between true and false, what syntax is used?",
+            options: [
+                { ar: "setShow(show + 1)", en: "setShow(show + 1)" },
+                { ar: "setShow(false)", en: "setShow(false)" },
+                { ar: "setShow(!show)", en: "setShow(!show)" },
+                { ar: "setShow(null)", en: "setShow(null)" }
+            ],
+            correct: 2,
+            exp_ar: "استخدام عامل النفي !show يعكس القيمة البوليانية الحالية من true إلى false والعكس.",
+            exp_en: "Using the logical NOT operator !show toggles the boolean value to its opposite."
+        },
+
+        // 5. Events
+        {
+            topic: "Events - onMouseEnter & Leave",
+            ar_q: "أي حدث في React ينطلق عندما يدخل مؤشر الفأرة فوق العنصر؟",
+            en_q: "Which React event is triggered when the mouse pointer enters an element?",
+            options: [
+                { ar: "onMouseOverOnly", en: "onMouseOverOnly" },
+                { ar: "onMouseLeave", en: "onMouseLeave" },
+                { ar: "onHover", en: "onHover" },
+                { ar: "onMouseEnter", en: "onMouseEnter" }
+            ],
+            correct: 3,
+            exp_ar: "الحدث onMouseEnter ينطلق فور دخول المؤشر فوق العنصر، بينما onMouseLeave عند خروجه.",
+            exp_en: "onMouseEnter fires when the cursor moves onto an element; onMouseLeave fires when it leaves."
+        },
+        {
+            topic: "Events - onChange",
+            ar_q: "في حقل إدخال input، كيف نقرأ القيمة التي يكتبها المستخدم في حدث onChange؟",
+            en_q: "In an input field, how do you retrieve the typed text inside the onChange event?",
+            options: [
+                { ar: "event.target.value", en: "event.target.value" },
+                { ar: "event.value", en: "event.value" },
+                { ar: "event.input.text", en: "event.input.text" },
+                { ar: "event.data.text", en: "event.data.text" }
+            ],
+            correct: 0,
+            exp_ar: "نصل إلى القيمة المدخلة في حقل الإدخال عبر event.target.value.",
+            exp_en: "event.target.value extracts the current value of the input DOM element."
+        },
+        {
+            topic: "Events - Passing Callbacks",
+            ar_q: "إذا مررنا دالة message إلى مكون: <Student fun={message} />، كيف يستدعيها المكون مع إرسال معامل؟",
+            en_q: "If passing message as a prop: <Student fun={message} />, how does Student invoke it with an argument?",
+            options: [
+                { ar: "onClick={fun('ali')}", en: "onClick={fun('ali')}" },
+                { ar: "onClick={() => fun('ali')}", en: "onClick={() => fun('ali')}" },
+                { ar: "onClick={fun}", en: "onClick={fun}" },
+                { ar: "onClick={call(fun, 'ali')}", en: "onClick={call(fun, 'ali')}" }
+            ],
+            correct: 1,
+            exp_ar: "يجب تغليفها بدالة سهمية () => fun('ali') حتى لا تُستدعى فوراً أثناء تصيير المكون.",
+            exp_en: "Wrapping in an arrow function () => fun('ali') prevents immediate execution during render."
+        },
+        {
+            topic: "Events - Immediate Invocation Bug",
+            ar_q: "ما الخطأ الذي يحدث عند كتابة onClick={increase()} بدلاً من onClick={increase}؟",
+            en_q: "What bug happens when writing onClick={increase()} instead of onClick={increase}?",
+            options: [
+                { ar: "تُستدعى الدالة فوراً عند تحميل المكون بدلاً من الانتظار للنقر", en: "The function executes immediately on render instead of waiting for a click" },
+                { ar: "لا تُستدعى الدالة مطلقاً", en: "The function never executes at all" },
+                { ar: "يتم مسح الدالة من الذاكرة", en: "The function is removed from memory" },
+                { ar: "يتعطل المتصفح بالكامل فوراً", en: "The browser freezes completely" }
+            ],
+            correct: 0,
+            exp_ar: "وضع القوسين () يستدعي الدالة مباشرة أثناء الرندر بدلاً من تمرير مرجع لها للانتظار للنقر.",
+            exp_en: "Adding () calls the function immediately during the render phase rather than passing a reference."
+        },
+
+        // 6. useState Basics
+        {
+            topic: "useState - Purpose",
+            ar_q: "لماذا لم يتحدث الرقم على الشاشة عند تعديل متغير عادي مثل count++ داخل الدالة؟",
+            en_q: "Why didn't the UI update when mutating a plain variable like count++ inside a function?",
+            options: [
+                { ar: "لأن بايثون لا تدعم المتغيرات", en: "Because Python does not support variables" },
+                { ar: "لأن تعديل المتغير العادي لا يجبر React على إعادة تصيير المكون (Re-render)", en: "Because mutating a plain variable does not trigger a React component re-render" },
+                { ar: "لأن المتغير كان ثابتاً const", en: "Because the variable was a const" },
+                { ar: "لأن المتصفح يمنع الأرقام", en: "Because the browser blocks numbers" }
+            ],
+            correct: 1,
+            exp_ar: "لا يعلم React بتغير المتغيرات العادية، ويجب استخدام useState لتخزين القيمة وإطلاق إعادة الرندر.",
+            exp_en: "React is unaware of plain variable mutations; useState is required to notify React to re-render."
+        },
+        {
+            topic: "useState - Syntax",
+            ar_q: "ما الصيغة الصحيحة لتعريف حالة عداد تبدأ من 0 باستخدام خطاف useState؟",
+            en_q: "What is the correct syntax to declare a counter state initialized to 0 using useState?",
+            options: [
+                { ar: "const count = useState(0);", en: "const count = useState(0);" },
+                { ar: "const [count, setCount] = useState(0);", en: "const [count, setCount] = useState(0);" },
+                { ar: "const {count, setCount} = useState(0);", en: "const {count, setCount} = useState(0);" },
+                { ar: "useState(count = 0);", en: "useState(count = 0);" }
+            ],
+            correct: 1,
+            exp_ar: "يرجع useState مصفوفة من عنصرين: القيمة الحالية والدالة المخصصة لتحديثها.",
+            exp_en: "useState returns a 2-element array: [currentValue, setterFunction]."
+        },
+        {
+            topic: "useState - State Update",
+            ar_q: "لزيادة قيمة count بمقدار 1 عند النقر على زر، ما الأمر المناسب داخل onClick؟",
+            en_q: "To increment state 'count' by 1 on button click, which code goes inside onClick?",
+            options: [
+                { ar: "count = count + 1", en: "count = count + 1" },
+                { ar: "count++", en: "count++" },
+                { ar: "() => setCount(count + 1)", en: "() => setCount(count + 1)" },
+                { ar: "setCount = count + 1", en: "setCount = count + 1" }
+            ],
+            correct: 2,
+            exp_ar: "يجب استخدام دالة التحديث setCount وتمرير القيمة الجديدة لها.",
+            exp_en: "The setter function setCount must be called with the new value."
+        },
+        {
+            topic: "useState - Objects & Spread Operator",
+            ar_q: "عند تحديث خاصية age في كائن الحالة student، ما فائدة كتابة ...student؟",
+            en_q: "When updating 'age' in state student via {...student, age: 14}, what does ...student do?",
+            options: [
+                { ar: "حذف جميع الخصائص الأخرى", en: "Deletes all other properties" },
+                { ar: "نسخ جميع الخصائص السابقة للكائن لمنع فقدانها (مثل name)", en: "Copies all previous object properties to avoid losing them (like 'name')" },
+                { ar: "تحويل الكائن إلى مصفوفة", en: "Converts the object to an array" },
+                { ar: "إعادة تعيين الكائن للقيم الافتراضية", en: "Resets the object to defaults" }
+            ],
+            correct: 1,
+            exp_ar: "عامل الانتشار (Spread Operator ...) ينسخ خصائص الكائن القديم ويسمح بتعديل age فقط دون فقدان الباقي.",
+            exp_en: "The spread operator (...) copies existing object properties so unmentioned keys are preserved."
+        },
+
+        // 7. useEffect & Cleanup
+        {
+            topic: "useEffect - Purpose",
+            ar_q: "ما هو الخطاف (Hook) في React المستخدم لإدارة الآثار الجانبية (Side Effects) مثل المؤقتات وجلب البيانات؟",
+            en_q: "Which React hook is used to handle side effects such as timers and data fetching?",
+            options: [
+                { ar: "useTimer", en: "useTimer" },
+                { ar: "useAction", en: "useAction" },
+                { ar: "useEffect", en: "useEffect" },
+                { ar: "useState", en: "useState" }
+            ],
+            correct: 2,
+            exp_ar: "الخطاف useEffect مخصص لإدارة الآثار الجانبية والتعامل مع العمليات غير المتزامنة والمؤقتات.",
+            exp_en: "useEffect handles side effects such as subscriptions, timers, and DOM mutations."
+        },
+        {
+            topic: "useEffect - Dependency Array",
+            ar_q: "ماذا يعني تمرير مصفوفة فارغة [] كمعامل ثانٍ لدالة useEffect(() => {}, [])؟",
+            en_q: "What does passing an empty dependency array [] as the 2nd argument to useEffect signify?",
+            options: [
+                { ar: "تنفيذ التأثير مع كل عملية رندر للمكون", en: "Runs the effect on every single re-render" },
+                { ar: "تنفيذ التأثير مرة واحدة فقط عند تركيب المكون (Mount)", en: "Runs the effect only once when the component mounts" },
+                { ar: "إلغاء تنفيذ التأثير نهائياً", en: "Disables the effect from ever running" },
+                { ar: "تنفيذ التأثير عند تغيير أي متغير", en: "Runs whenever any state variable changes" }
+            ],
+            correct: 1,
+            exp_ar: "المصفوفة الفارغة [] تخبر React بتشغيل التأثير مرة واحدة فقط بعد أول عملية رندر للمكون.",
+            exp_en: "An empty dependency array [] runs the effect once after the initial render (on mount)."
+        },
+        {
+            topic: "useEffect - Cleanup Function",
+            ar_q: "ما وظيفة الدالة المُرجعة داخل useEffect مثل: return () => clearInterval(timer)؟",
+            en_q: "What is the purpose of the returned cleanup function: return () => clearInterval(timer)?",
+            options: [
+                { ar: "بدء تشغيل المؤقت من الصفر", en: "Restarting the timer from zero" },
+                { ar: "تنظيف وإيقاف المؤقت عند إزالة المكون (Unmount) لمنع تسريب الذاكرة", en: "Cleaning up and stopping the timer when unmounting to prevent memory leaks" },
+                { ar: "تحديث الشاشة كل ثانية", en: "Updating the screen every second" },
+                { ar: "إعادة بناء المكون فوراً", en: "Rebuilding the component immediately" }
+            ],
+            correct: 1,
+            exp_ar: "دالة التنظيف (Cleanup function) تُستدعى قبل إزالة المكون لإيقاف المؤقتات ومسح الاشتراكات.",
+            exp_en: "The cleanup function cleans up resources (e.g., clearing intervals) when the component unmounts."
+        },
+        {
+            topic: "useEffect - Functional State Update",
+            ar_q: "في الكود: setSeconds(seconds => seconds + 1)، لماذا استخدمنا دالة تحديث بدلاً من setSeconds(seconds + 1)؟",
+            en_q: "In setSeconds(seconds => seconds + 1), why use a functional update instead of setSeconds(seconds + 1)?",
+            options: [
+                { ar: "لضمان الاعتماد على أحدث قيمة للحالة وتفادي مشكلة الإغلاق القديم (Stale State)", en: "To guarantee access to the latest state value and avoid stale closure issues" },
+                { ar: "لأنها تجعل المؤقت يعمل بسرعة مضاعفة", en: "Because it makes the timer tick twice as fast" },
+                { ar: "لأن دالة setInterval ترفض الأرقام", en: "Because setInterval rejects raw numbers" },
+                { ar: "لأنها تحول الرقم إلى نص", en: "Because it converts the integer to a string" }
+            ],
+            correct: 0,
+            exp_ar: "دالة التحديث (Functional state update) تضمن أخذ القيمة السابقة الصحيحة حتى مع الإغلاقات المتأخرة.",
+            exp_en: "Functional updates ensure you always compute the new state from the most up-to-date state."
+        },
+        {
+            topic: "React Fundamentals - Imports",
+            ar_q: "من أي حزمة برمجية نستورد الخطافات الأساسية useState و useEffect؟",
+            en_q: "From which package do we import standard hooks like useState and useEffect?",
+            options: [
+                { ar: "من حزمة 'react-dom'", en: "from 'react-dom'" },
+                { ar: "من حزمة 'react-router'", en: "from 'react-router'" },
+                { ar: "من حزمة 'react'", en: "from 'react'" },
+                { ar: "من حزمة 'react-hooks'", en: "from 'react-hooks'" }
+            ],
+            correct: 2,
+            exp_ar: "يتم استيراد الخطافات مباشرة من المكتبة الأساسية: import { useState, useEffect } from 'react'.",
+            exp_en: "Core hooks are imported directly from the 'react' package."
+        },
+        {
+            topic: "Components - Exporting",
+            ar_q: "ما معنى السطر: export default App في نهاية ملف المكون؟",
+            en_q: "What does export default App at the end of a component file mean?",
+            options: [
+                { ar: "حذف المكون من المشروع", en: "Deletes the component from the project" },
+                { ar: "تصدير المكون ليكون التصدير الافتراضي للملف ليتمكن ملف آخر من استيراده", en: "Exports the component as the default export so other files can import it" },
+                { ar: "تشغيل التطبيق في المتصفح", en: "Launches the application in the browser" },
+                { ar: "تحويل المكون إلى صفحة HTML ثابتة", en: "Converts the component to static HTML" }
+            ],
+            correct: 1,
+            exp_ar: "تتيح export default تصدير المكون الرئيسي للملف لتسهيل استيراده في ملفات أخرى مثل index.js.",
+            exp_en: "export default designates the component as the primary export to be imported by other modules."
+        },
+        {
+            topic: "Components - Props Naming",
+            ar_q: "هل أسماء الـ Props مثل (name, age, active, data) ثابتة إجبارية في React أم اختيارية من المبرمج؟",
+            en_q: "Are prop names like (name, age, active, data) reserved keywords or custom identifier names?",
+            options: [
+                { ar: "كلمات محجوزة إجبارية من React", en: "Strict reserved keywords enforced by React" },
+                { ar: "أسماء مخصصة يحددها المبرمج بحرية لتمرير بياناته", en: "Custom identifier names chosen freely by the developer" },
+                { ar: "يجب أن تكون كلها بحروف كبيرة فقط", en: "Must strictly be all uppercase" },
+                { ar: "يجب أن تبدأ دائماً بكلمة prop_", en: "Must always start with prop_" }
+            ],
+            correct: 1,
+            exp_ar: "أسماء الخصائص (Props) يحددها المطور كما يشاء لتناسب البيانات التي يمررها لمكوناته.",
+            exp_en: "Prop names are custom user-defined attributes tailored to the data being passed."
+        },
+        {
+            topic: "Components - Component Naming",
+            ar_q: "لماذا تبدأ أسماء المكونات مثل App و Hello و Counter بحرف كبير (PascalCase)؟",
+            en_q: "Why do component names like App, Hello, and Counter start with an uppercase letter (PascalCase)?",
+            options: [
+                { ar: "لأن React يميز بين وسوم HTML العادية (حروف صغيرة) ومكونات React المخصصة", en: "Because React distinguishes native HTML tags (lowercase) from custom components" },
+                { ar: "لتسريع معالجة النصوص في بايثون", en: "To optimize text processing speed" },
+                { ar: "لأن الحروف الصغيرة ممنوعة في جافاسكريبت", en: "Because lowercase letters are illegal in JS" },
+                { ar: "مجرد تفضيل جمالي دون أي تأثير برمجي", en: "Purely a visual preference with no technical impact" }
+            ],
+            correct: 0,
+            exp_ar: "يعتبر React أي وسم يبدأ بحرف صغير وسماً أصلياً في HTML، بينما الحرف الكبير يعني مكوناً مخصصاً.",
+            exp_en: "React treats lowercase elements as built-in HTML tags, and capitalized ones as custom components."
+        },
+        {
+            topic: "Props - Unidirectional Data Flow",
+            ar_q: "كيف تتدفق البيانات عبر الـ Props في React؟",
+            en_q: "How does data flow via Props in React?",
+            options: [
+                { ar: "من المكون الابن إلى الأب فقط", en: "From child to parent only" },
+                { ar: "في اتجاه واحد من المكون الأب إلى المكون الابن (One-way data flow)", en: "In one direction from parent to child (One-way data flow)" },
+                { ar: "في جميع الاتجاهات بشكل عشوائي", en: "Bidirectionally in all directions at random" },
+                { ar: "لا تنتقل البيانات بين المكونات مطلقاً", en: "Data never passes between components" }
+            ],
+            correct: 1,
+            exp_ar: "تتميز React بتدفق البيانات أحادي الاتجاه (Unidirectional Data Flow) من الآباء إلى الأبناء.",
+            exp_en: "React features a one-way unidirectional data flow down from parent to child components."
+        },
+        {
+            topic: "State vs Props",
+            ar_q: "ما الفرق الجوهري بين Props و State في مكونات React؟",
+            en_q: "What is the key difference between Props and State in React components?",
+            options: [
+                { ar: "Props للقراءة فقط وتأتي من الخارج، بينما State بيانات داخلية يمكن للمكون تعديلها", en: "Props are read-only from parent, while State is internal and mutable by the component" },
+                { ar: "State تُمرر من الأب، بينما Props تُعرف داخل المكون", en: "State is passed from parents, while Props are defined inside" },
+                { ar: "كلاهما متطابقان تماماً", en: "Both are completely identical" },
+                { ar: "Props للأرقام فقط و State للنصوص فقط", en: "Props are only for numbers and State for text" }
+            ],
+            correct: 0,
+            exp_ar: "الـ Props غير قابلة للتعديل داخل الابن (Read-only)، بينما State هي حالة خاصة يمتلكها ويعدلها المكون.",
+            exp_en: "Props are immutable parameters passed in; state is mutable data managed within the component."
+        },
+        {
+            topic: "useEffect - Timers",
+            ar_q: "ما الدالة المستخدمة داخل useEffect لتكرار تنفيذ كود معين كل ثانية (1000ms)؟",
+            en_q: "Which JS timer function is used inside useEffect to repeatedly execute code every second (1000ms)?",
+            options: [
+                { ar: "setTimeout()", en: "setTimeout()" },
+                { ar: "setInterval()", en: "setInterval()" },
+                { ar: "setClock()", en: "setClock()" },
+                { ar: "repeatNow()", en: "repeatNow()" }
+            ],
+            correct: 1,
+            exp_ar: "الدالة setInterval(fn, 1000) تكرر استدعاء الدالة كل 1000 مللي ثانية.",
+            exp_en: "setInterval repeatedly executes its callback at the specified millisecond intervals."
+        },
+        {
+            topic: "useEffect - Stopping Timers",
+            ar_q: "ما الدالة المستخدمة لإلغاء وإيقاف مؤقت أنشئ بواسطة setInterval؟",
+            en_q: "Which function is used to clear and cancel a timer created by setInterval?",
+            options: [
+                { ar: "stopTimer()", en: "stopTimer()" },
+                { ar: "deleteInterval()", en: "deleteInterval()" },
+                { ar: "clearInterval()", en: "clearInterval()" },
+                { ar: "endInterval()", en: "endInterval()" }
+            ],
+            correct: 2,
+            exp_ar: "نستخدم clearInterval(timer) لإلغاء المؤقت ومنع استمراره في الخلفية.",
+            exp_en: "clearInterval() cancels a timed repeating action established by setInterval."
+        },
+        {
+            topic: "Conditional Rendering - show state",
+            ar_q: "في الكود: {show && <Counter />}، ماذا يحدث للمكون Counter عندما تصبح قيمة show تساوي false؟",
+            en_q: "In {show && <Counter />}, what happens to component Counter when show becomes false?",
+            options: [
+                { ar: "يختفي المكون ويُزال تماماً من شجرة الـ DOM (Unmount)", en: "It disappears and is completely unmounted from the DOM tree" },
+                { ar: "يتحول لونه إلى شفاف فقط", en: "Its CSS opacity is set to zero" },
+                { ar: "يتوقف عن العمل ويبقى في الصفحة", en: "It freezes but remains in the HTML" },
+                { ar: "يتم مسح ملف الكود من المشروع", en: "The code file is deleted" }
+            ],
+            correct: 0,
+            exp_ar: "يتم فك وتركيب المكون (Unmount) بالكامل، مما يشغل دالة الـ cleanup الخاصة بـ useEffect.",
+            exp_en: "The component is unmounted from the DOM, triggering any useEffect cleanup functions."
+        },
+        {
+            topic: "Lists - Keys",
+            ar_q: "عند استخدام map() لتوليد عناصر مصفوفة في React، ما الخاصية التي يوصى دائماً بإضافتها مثل <li key={...}>؟",
+            en_q: "When using map() to render a list in React, which prop is recommended on items like <li key={...}>?",
+            options: [
+                { ar: "الخاصية id_num", en: "id_num" },
+                { ar: "الخاصية key", en: "key" },
+                { ar: "الخاصية index_name", en: "index_name" },
+                { ar: "الخاصية unique", en: "unique" }
+            ],
+            correct: 1,
+            exp_ar: "تساعد الخاصية key مكتبة React في تتبع العناصر التي تغيرت أو أُضيفت أو حُذفت بكفاءة.",
+            exp_en: "The 'key' prop helps React identify which items have changed, been added, or been removed."
+        },
+        {
+            topic: "JSX - Attribute class",
+            ar_q: "لتحديد صنف CSS لعنصر داخل كود JSX، نستخدم كلمة:",
+            en_q: "To assign a CSS class to an element inside JSX, we write:",
+            options: [
+                { ar: "class", en: "class" },
+                { ar: "className", en: "className" },
+                { ar: "cssClass", en: "cssClass" },
+                { ar: "styleClass", en: "styleClass" }
+            ],
+            correct: 1,
+            exp_ar: "تُستخدم className لأن كلمة class محجوزة لتعريف الفئات في جافاسكريبت.",
+            exp_en: "className is used because 'class' is a reserved keyword in JavaScript."
+        },
+        {
+            topic: "JSX - Inline Styles",
+            ar_q: "كيف تُمرر التنسيقات المباشرة (Inline Styles) في React؟",
+            en_q: "How are inline styles passed to JSX elements in React?",
+            options: [
+                { ar: "كنص عادي style='color: red'", en: "As a raw string style='color: red'" },
+                { ar: "ككائن جافاسكريبت داخل قوسين style={{ color: 'red' }}", en: "As a JS object inside double braces style={{ color: 'red' }}" },
+                { ar: "عبر وسم <style> داخل المكون", en: "Via a <style> tag inside the element" },
+                { ar: "لا يمكن تطبيق تنسيقات مباشرة في React", en: "Inline styles are not supported" }
+            ],
+            correct: 1,
+            exp_ar: "تُمرر التنسيقات المباشرة ككائن JS داخل أقواس التعبير: style={{ color: 'red' }}.",
+            exp_en: "Inline styles are passed as JavaScript objects using double curly braces: style={{ ... }}."
+        },
+        {
+            topic: "useState - Initial Value",
+            ar_q: "ما هي القيمة الابتدائية للحالة في السطر: const [student, setStudent] = useState({ name: 'ali', age: 15 })؟",
+            en_q: "What is the initial state value in: const [student, setStudent] = useState({ name: 'ali', age: 15 })?",
+            options: [
+                { ar: "رقم 15", en: "The number 15" },
+                { ar: "نص 'ali'", en: "The string 'ali'" },
+                { ar: "كائن يحتوي على name و age", en: "An object containing name and age" },
+                { ar: "مصفوفة فارغة", en: "An empty array" }
+            ],
+            correct: 2,
+            exp_ar: "تم تمرير كائن جافاسكريبت يحتوي على خاصيتي name و age كقيمة ابتدائية للحالة.",
+            exp_en: "A JavaScript object with 'name' and 'age' properties is passed as the initial state."
+        },
+        {
+            topic: "Hooks - Rules of Hooks",
+            ar_q: "أي من القواعد التالية تعتبر قاعدة أساسية لاستخدام خطافات React (Hooks) مثل useState؟",
+            en_q: "Which rule is a fundamental Rule of Hooks in React when using hooks like useState?",
+            options: [
+                { ar: "يجب استدعاؤها في المستوى الأعلى للمكون وليس داخل حلقات تكرار أو شروط", en: "Must be called at the top level, never inside loops or conditions" },
+                { ar: "يمكن استدعاؤها داخل دوال جافاسكريبت عادية خارج المكونات", en: "Can be called inside regular non-React JS functions" },
+                { ar: "يجب أن تبدأ أسماؤها بحرف كبير", en: "Hook names must be capitalized" },
+                { ar: "لا يمكن استخدام أكثر من خطاف واحد في نفس الملف", en: "Only one hook is allowed per file" }
+            ],
+            correct: 0,
+            exp_ar: "تقتضي قواعد الخطافات استدعاءها في قمة دالة المكون فقط دون وضعها داخل if أو for.",
+            exp_en: "Hooks must only be called at the top level of React function components, not within loops or conditions."
+        },
+        {
+            topic: "Events - Synthetic Events",
+            ar_q: "المعامل event في onClick={(event) => ...} هو كائن:",
+            en_q: "The event parameter in onClick={(event) => ...} is a:",
+            options: [
+                { ar: "كائن حدث اصطناعي (SyntheticEvent) توفره React لتوافق المتصفحات", en: "SyntheticEvent wrapper provided by React for cross-browser consistency" },
+                { ar: "مصفوفة من عناصر DOM", en: "An array of DOM nodes" },
+                { ar: "قيمة نصية بسيطة", en: "A simple string" },
+                { ar: "كائن خادم Node.js", en: "A Node.js server instance" }
+            ],
+            correct: 0,
+            exp_ar: "تغلف React أحداث المتصفح في كائن موحد يسمى SyntheticEvent ليعمل بنفس الطريقة في جميع المتصفحات.",
+            exp_en: "React wraps native browser events in a SyntheticEvent for cross-browser compatibility."
+        },
+        {
+            topic: "State - Re-render Trigger",
+            ar_q: "ما الذي يحدث عندما نقوم باستدعاء دالة التحديث setcount(count + 1)؟",
+            en_q: "What occurs under the hood when invoking setcount(count + 1)?",
+            options: [
+                { ar: "إعادة تحميل الصفحة بالكامل من السيرفر (Page Reload)", en: "Full page reload from the web server" },
+                { ar: "تحديث قيمة الحالة وجدولة إعادة تصيير المكون (Re-render) لتحديث واجهة المستخدم", en: "Updates state value and schedules a component re-render to update the UI" },
+                { ar: "حذف المكون نهائياً", en: "Unmounts the component permanently" },
+                { ar: "تغيير عنوان الـ URL في المتصفح", en: "Changes the browser URL route" }
+            ],
+            correct: 1,
+            exp_ar: "تقوم دوال تحديث الحالة بتعديل القيمة وإشعار React لإعادة رندر المكون وتحديث الشاشة بذكاء.",
+            exp_en: "State setters update the value and queue a re-render so the DOM reflects the new state."
+        },
+        {
+            topic: "Components - Pure Functions",
+            ar_q: "المكونات الوظيفية (Function Components) في React يُفضل أن تكون:",
+            en_q: "Function Components in React are best designed to be:",
+            options: [
+                { ar: "دوال نقية (Pure Functions) تنتج نفس الـ JSX لنفس الـ Props المدخلة", en: "Pure functions producing the same JSX output for the same input Props" },
+                { ar: "دوال تعدل في متغيرات عامة خارجها دائماً", en: "Functions that mutate global variables" },
+                { ar: "دوال لا تقبل أي مدخلات أبداً", en: "Functions accepting zero arguments" },
+                { ar: "ملفات HTML منفصلة دون كود JS", en: "Isolated HTML files without JS" }
+            ],
+            correct: 0,
+            exp_ar: "تعتمد فلسفة React على أن المكون دالة نقية تتلقى Props وتعيد واجهة JSX مطابقة لتلك المدخلات.",
+            exp_en: "React expects components to be pure functions with respect to their props."
+        },
+        {
+            topic: "JSX - Comments",
+            ar_q: "كيف نكتب تعليقاً برمجياً داخل كود JSX؟",
+            en_q: "How do you write a comment inside JSX markup?",
+            options: [
+                { ar: "<!-- تعليق -->", en: "<!-- comment -->" },
+                { ar: "/* تعليق */", en: "/* comment */" },
+                { ar: "{/* تعليق */}", en: "{/* comment */}" },
+                { ar: "// تعليق", en: "// comment" }
+            ],
+            correct: 2,
+            exp_ar: "نكتب التعليقات داخل JSX محاطة بأقواس معقوفة: {/* تعليق */}.",
+            exp_en: "Inside JSX, comments must be wrapped in curly braces: {/* comment */}."
+        },
+        {
+            topic: "Events - Click Prevent Default",
+            ar_q: "لمنع السلوك الافتراضي لنموذج أو رابط عند النقر، نستخدم:",
+            en_q: "To prevent the default browser behavior of a form or anchor link, we call:",
+            options: [
+                { ar: "event.stop()", en: "event.stop()" },
+                { ar: "event.preventDefault()", en: "event.preventDefault()" },
+                { ar: "event.cancel()", en: "event.cancel()" },
+                { ar: "event.block()", en: "event.block()" }
+            ],
+            correct: 1,
+            exp_ar: "تُستخدم دالة event.preventDefault() لمنع إعادة تحميل الصفحة في النماذج أو الانتقال في الروابط.",
+            exp_en: "event.preventDefault() stops the default browser action from taking place."
+        },
+        {
+            topic: "JSX - Boolean Rendering",
+            ar_q: "ماذا يظهر على الشاشة إذا كانت قيمة متغير boolean تساوي true وحاولنا طباعتها هكذا: <p>{true}</p>؟",
+            en_q: "What renders on screen if we embed a boolean directly like <p>{true}</p>?",
+            options: [
+                { ar: "كلمة 'true' كنص", en: "The string 'true'" },
+                { ar: "الرقم 1", en: "The number 1" },
+                { ar: "لا يظهر أي شيء (فارغ)", en: "Nothing renders (blank)" },
+                { ar: "حدوث خطأ توقف", en: "A runtime crash" }
+            ],
+            correct: 2,
+            exp_ar: "القيم البوليانية true و false وكذلك null و undefined يتم تجاهلها في JSX ولا تطبع شيئاً في الشاشة.",
+            exp_en: "Booleans, null, and undefined are ignored by JSX and render as empty content."
+        },
+        {
+            topic: "Component Tree - Hierarchy",
+            ar_q: "عند استدعاء <Hello /> داخل المكون App، يُعتبر المكون App هو:",
+            en_q: "When <Hello /> is rendered inside App, the App component is considered the:",
+            options: [
+                { ar: "المكون الابن (Child Component)", en: "Child Component" },
+                { ar: "المكون الأب (Parent Component)", en: "Parent Component" },
+                { ar: "المكون الجار (Sibling Component)", en: "Sibling Component" },
+                { ar: "مكون الجذر غير المتصل (Disconnected Root)", en: "Disconnected Root" }
+            ],
+            correct: 1,
+            exp_ar: "المكون الذي يستدعي مكوناً آخر داخله يُسمى المكون الأب (Parent Component).",
+            exp_en: "The component rendering another component within its template is the Parent component."
+        },
+        {
+            topic: "State - Multiple States",
+            ar_q: "هل يمكن استخدام خطاف useState أكثر من مرة داخل نفس المكون الوظيفي؟",
+            en_q: "Can you call useState multiple times within the same function component?",
+            options: [
+                { ar: "نعم، يمكن تعريف عدة متغيرات حالة مستقلة داخل نفس المكون", en: "Yes, you can declare multiple independent state variables in a component" },
+                { ar: "لا، مسموح بـ useState واحدة فقط لكل مكون", en: "No, exactly one useState call is allowed per component" },
+                { ar: "نعم ولكن للأرقام فقط", en: "Yes, but only for numerical states" },
+                { ar: "لا إلا إذا كان المكون من فئة Class", en: "No, unless it is a Class component" }
+            ],
+            correct: 0,
+            exp_ar: "يمكن استخدام useState عدة مرات لإنشاء متغيرات حالة مستقلة (مثل count و show و name).",
+            exp_en: "You can use as many useState hooks as needed to track distinct pieces of state."
+        },
+        {
+            topic: "useEffect - Multiple Effects",
+            ar_q: "هل يمكن تعريف أكثر من useEffect داخل المكون الواحد لفصل المهام؟",
+            en_q: "Can a single component have multiple useEffect hooks to separate different concerns?",
+            options: [
+                { ar: "لا، يُسمح بواحد فقط", en: "No, only one useEffect is permitted" },
+                { ar: "نعم، لفصل اهتمامات ومؤقتات مختلفة بشكل منظم", en: "Yes, to separate unrelated side effects cleanly" },
+                { ar: "نعم ولكن يجب أن تكون جميعها بدون مصفوفة اعتماد", en: "Yes, but they must all lack dependency arrays" },
+                { ar: "لا لأنها تسبب تعارضاً دائماً", en: "No, because they always conflict" }
+            ],
+            correct: 1,
+            exp_ar: "تتيح React استخدام عدة تأثيرات useEffect لتقسيم العمليات المختلفة والاشتراكات بشكل نظيف.",
+            exp_en: "Multiple useEffect calls can be used to separate unrelated logic and subscriptions."
+        },
+        {
+            topic: "React Ecosystem - Summary",
+            ar_q: "ما الميزة الأساسية التي تجعل React سريعاً وفعالاً في تحديث الواجهة؟",
+            en_q: "What core mechanism makes React fast and efficient when updating user interfaces?",
+            options: [
+                { ar: "إعادة تحميل المتصفح بالكامل", en: "Full page browser reloads" },
+                { ar: "استخدام نموذج شجرة DOM الافتراضية (Virtual DOM) لتحديث الأجزاء المتغيرة فقط", en: "Using a Virtual DOM to compute differences and update only changed nodes" },
+                { ar: "الاعتماد على قواعد بيانات خارجية دائماً", en: "Relying on external databases exclusively" },
+                { ar: "كتابة الأكواد بلغة C++ فقط", en: "Compiling directly to C++ binaries" }
+            ],
+            correct: 1,
+            exp_ar: "تستخدم React الـ Virtual DOM للمقارنة (Diffing) وتحديث الأجزاء المتغيرة فقط في الشاشة دون المساس بالباقي.",
+            exp_en: "React uses a Virtual DOM diffing algorithm to reconcile and patch only the modified DOM nodes."
+        }
+    ];
+
+    let userAnswers = new Array(questions.length).fill(null);
+    let currentIdx = 0;
+    let score = 0;
+
+    function loadScores() {
+        const storedHigh = localStorage.getItem('react_quiz_highscore');
+        const high = storedHigh ? parseInt(storedHigh) : 0;
+        document.getElementById('highScore').innerText = high;
+
+        const storedFirst = localStorage.getItem('react_quiz_first_score');
+        if (storedFirst !== null) {
+            document.getElementById('firstScore').innerText = storedFirst;
+        } else {
+            document.getElementById('firstScore').innerText = "--";
+        }
+        return { high, first: storedFirst };
+    }
+
+    function saveScores(finalScore) {
+        let isFirstTime = false;
+        if (localStorage.getItem('react_quiz_first_score') === null) {
+            localStorage.setItem('react_quiz_first_score', finalScore);
+            document.getElementById('firstScore').innerText = finalScore;
+            isFirstTime = true;
+        }
+
+        const currentHigh = parseInt(localStorage.getItem('react_quiz_highscore') || '0');
+        let isNewHigh = false;
+        if (finalScore > currentHigh) {
+            localStorage.setItem('react_quiz_highscore', finalScore);
+            document.getElementById('highScore').innerText = finalScore;
+            isNewHigh = true;
+        }
+
+        return { isFirstTime, isNewHigh };
+    }
+
+    function calculateScore() {
+        let s = 0;
+        for (let i = 0; i < questions.length; i++) {
+            if (userAnswers[i] !== null && userAnswers[i] === questions[i].correct) {
+                s++;
+            }
+        }
+        score = s;
+        document.getElementById('score').innerText = score;
+        return score;
+    }
+
+    function displayQuestion() {
+        const q = questions[currentIdx];
+        document.getElementById('qCurrent').innerText = currentIdx + 1;
+        document.getElementById('topicBadge').innerText = q.topic;
+        document.getElementById('questionTextAr').innerText = (currentIdx + 1) + ". " + q.ar_q;
+        document.getElementById('questionTextEn').innerText = "Q" + (currentIdx + 1) + ": " + q.en_q;
+
+        const answeredCount = userAnswers.filter(a => a !== null).length;
+        const pct = (answeredCount / questions.length) * 100;
+        document.getElementById('progressBar').style.width = pct + '%';
+
+        const container = document.getElementById('optionsContainer');
+        container.innerHTML = '';
+
+        const expBox = document.getElementById('explanationText');
+        const statusIndicator = document.getElementById('qStatusIndicator');
+
+        const prevAns = userAnswers[currentIdx];
+
+        if (prevAns === null) {
+            statusIndicator.innerText = "لم يُجب بعد / Not answered";
+            statusIndicator.style.color = "var(--text-muted)";
+            expBox.style.display = 'none';
+        } else {
+            statusIndicator.innerText = prevAns === q.correct ? "✅ إجابة صحيحة مسجلة" : "❌ إجابة خاطئة مسجلة";
+            statusIndicator.style.color = prevAns === q.correct ? "var(--success)" : "var(--danger)";
+            showExplanation(prevAns === q.correct, prevAns);
+        }
+
+        q.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'opt-btn';
+            btn.innerHTML = `
+                <div class="opt-ar">${['أ', 'ب', 'ج', 'د'][idx]}) ${opt.ar}</div>
+                <div class="opt-en">${['A', 'B', 'C', 'D'][idx]}) ${opt.en}</div>
+            `;
+
+            if (prevAns !== null) {
+                btn.disabled = true;
+                if (idx === q.correct) {
+                    btn.classList.add('correct');
+                } else if (idx === prevAns) {
+                    btn.classList.add('wrong');
+                }
+            } else {
+                btn.onclick = () => selectAnswer(idx);
+            }
+            container.appendChild(btn);
+        });
+
+        document.getElementById('prevBtn').disabled = (currentIdx === 0);
+        document.getElementById('nextBtn').innerText = (currentIdx === questions.length - 1) ? "إنهاء الاختبار / Finish 🏁" : "التالي / Next ⬅️";
+    }
+
+    function selectAnswer(chosenIdx) {
+        if (userAnswers[currentIdx] !== null) return;
+
+        userAnswers[currentIdx] = chosenIdx;
+        calculateScore();
+
+        const q = questions[currentIdx];
+        const isCorrect = (chosenIdx === q.correct);
+
+        const buttons = document.querySelectorAll('.opt-btn');
+        buttons.forEach(b => b.disabled = true);
+
+        if (isCorrect) {
+            buttons[chosenIdx].classList.add('correct');
+        } else {
+            buttons[chosenIdx].classList.add('wrong');
+            buttons[q.correct].classList.add('correct');
+        }
+
+        showExplanation(isCorrect, chosenIdx);
+
+        const statusIndicator = document.getElementById('qStatusIndicator');
+        statusIndicator.innerText = isCorrect ? "✅ إجابة صحيحة مسجلة" : "❌ إجابة خاطئة مسجلة";
+        statusIndicator.style.color = isCorrect ? "var(--success)" : "var(--danger)";
+
+        const answeredCount = userAnswers.filter(a => a !== null).length;
+        document.getElementById('progressBar').style.width = ((answeredCount / questions.length) * 100) + '%';
+    }
+
+    function showExplanation(isCorrect, chosenIdx) {
+        const q = questions[currentIdx];
+        const expBox = document.getElementById('explanationText');
+
+        if (isCorrect) {
+            expBox.innerHTML = `
+                <b>✅ إجابة صحيحة / Correct!</b><br>
+                <div>${q.exp_ar}</div>
+                <div class="exp-en">${q.exp_en}</div>
+            `;
+            expBox.style.borderRightColor = 'var(--success)';
+        } else {
+            expBox.innerHTML = `
+                <b>❌ إجابة غير دقيقة / Incorrect!</b><br>
+                <div>الإجابة الصحيحة هي: <b>${q.options[q.correct].ar}</b></div>
+                <div class="exp-en">Correct choice: <b>${q.options[q.correct].en}</b></div>
+                <div style="margin-top: 6px;">${q.exp_ar}</div>
+                <div class="exp-en">${q.exp_en}</div>
+            `;
+            expBox.style.borderRightColor = 'var(--danger)';
+        }
+        expBox.style.display = 'block';
+    }
+
+    function nextQuestion() {
+        if (currentIdx < questions.length - 1) {
+            currentIdx++;
+            displayQuestion();
+        } else {
+            showFinalResults();
+        }
+    }
+
+    function prevQuestion() {
+        if (currentIdx > 0) {
+            currentIdx--;
+            displayQuestion();
+        }
+    }
+
+    function openIndexModal() {
+        buildIndexGrid();
+        document.getElementById('indexModal').style.display = 'flex';
+    }
+
+    function closeIndexModal() {
+        document.getElementById('indexModal').style.display = 'none';
+    }
+
+    function closeIndexModalOnOutside(e) {
+        if (e.target.id === 'indexModal') {
+            closeIndexModal();
+        }
+    }
+
+    function buildIndexGrid() {
+        const grid = document.getElementById('gridIndexContainer');
+        grid.innerHTML = '';
+
+        for (let i = 0; i < questions.length; i++) {
+            const pill = document.createElement('div');
+            pill.className = 'index-pill';
+            pill.innerText = (i + 1);
+
+            if (i === currentIdx) {
+                pill.classList.add('active');
+            }
+
+            if (userAnswers[i] !== null) {
+                if (userAnswers[i] === questions[i].correct) {
+                    pill.classList.add('solved-correct');
+                } else {
+                    pill.classList.add('solved-wrong');
+                }
+            }
+
+            pill.onclick = () => {
+                currentIdx = i;
+                displayQuestion();
+                closeIndexModal();
+            };
+
+            grid.appendChild(pill);
+        }
+    }
+
+    function showFinalResults() {
+        document.getElementById('quizCard').style.display = 'none';
+        document.getElementById('progressBar').style.width = '100%';
+
+        const resultsCard = document.getElementById('resultsCard');
+        resultsCard.style.display = 'block';
+
+        calculateScore();
+        document.getElementById('finalScore').innerText = score;
+        const res = saveScores(score);
+        const scores = loadScores();
+
+        const notice = document.getElementById('highScoreNotice');
+        const msg = document.getElementById('resultMsg');
+        const icon = document.getElementById('trophyIcon');
+
+        let textDetails = `🎯 أول محاولة مسجلة (First Attempt): ${scores.first} من 50<br>`;
+        if (res.isNewHigh && score > 0) {
+            textDetails += `🏆 مبروك! حققت رقماً قياسياً جديداً (New High Score): ${score} من 50!`;
+        } else {
+            textDetails += `🏆 أعلى نتيجة على هذا الجهاز (Best Score): ${scores.high} من 50`;
+        }
+        notice.innerHTML = textDetails;
+
+        if (score >= 45) {
+            msg.innerText = "ممتاز وفوق العادة! خبير حقيقي في أساسيات React 🌟";
+            icon.innerText = "👑";
+        } else if (score >= 35) {
+            msg.innerText = "جيد جداً! استيعاب رائع للمكونات والـ Hooks والأحداث 👏";
+            icon.innerText = "🎉";
+        } else if (score >= 25) {
+            msg.innerText = "مستوى متوسط! راجع جزئيات useEffect وتنظيف المؤقتات 📖";
+            icon.innerText = "👍";
+        } else {
+            msg.innerText = "يُنصح بإعادة دراسة وتطبيق الأكواد عملياً ⚠️";
+            icon.innerText = "💡";
+        }
+    }
+
+    function restartQuiz() {
+        userAnswers = new Array(questions.length).fill(null);
+        currentIdx = 0;
+        score = 0;
+        document.getElementById('score').innerText = '0';
+        document.getElementById('resultsCard').style.display = 'none';
+        document.getElementById('quizCard').style.display = 'block';
+        displayQuestion();
+    }
+
+    window.onload = function() {
+        loadScores();
+        displayQuestion();
+    };
+</script>
+</body>
+</html>
