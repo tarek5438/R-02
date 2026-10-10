@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React Quiz: useRef Hook (20 Questions)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;600;700;800&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --accent: #f59e0b;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', 'Inter', sans-serif;
+        }
+
+        code, pre {
+            font-family: 'Fira Code', monospace;
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.92em;
+            color: #0284c7;
+            direction: ltr;
+            display: inline-block;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0f172a 0%, #0369a1 100%);
+            color: white;
+            padding: 26px 20px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.25);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 1.7rem;
+            font-weight: 900;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            color: #e0f2fe;
+            direction: ltr;
+        }
+
+        .stats-bar {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: block;
+        }
+
+        .stat-val {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-val.high {
+            color: var(--accent);
+        }
+
+        .btn-index {
+            background: #f0f9ff;
+            color: var(--primary);
+            border: 2px solid #bae6fd;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-index:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s ease;
+        }
+
+        .q-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 10px 20px -3px rgba(0,0,0,0.06);
+            margin-bottom: 24px;
+        }
+
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .q-badge {
+            background: #f0f9ff;
+            color: var(--primary);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .q-text-ar {
+            font-size: 1.25rem;
+            font-weight: 800;
+            line-height: 1.8;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+
+        .q-text-en {
+            font-size: 1.05rem;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #475569;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+            border-left: 3px solid var(--primary);
+            padding-left: 12px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .opt-btn {
+            background: #f8fafc;
+            border: 2px solid var(--border);
+            padding: 14px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            text-align: right;
+        }
+
+        .opt-btn:hover:not(:disabled) {
+            background: #f0f9ff;
+            border-color: #7dd3fc;
+            transform: translateX(-4px);
+        }
+
+        .opt-btn.correct {
+            background: #dcfce7 !important;
+            border-color: var(--success) !important;
+        }
+
+        .opt-btn.wrong {
+            background: #fee2e2 !important;
+            border-color: var(--danger) !important;
+        }
+
+        .opt-ar {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .opt-en {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #64748b;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .opt-btn.correct .opt-ar, .opt-btn.correct .opt-en {
+            color: #15803d !important;
+        }
+
+        .opt-btn.wrong .opt-ar, .opt-btn.wrong .opt-en {
+            color: #991b1b !important;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 0.98rem;
+            line-height: 1.7;
+            display: none;
+            background: #f1f5f9;
+            border-right: 5px solid var(--primary);
+        }
+
+        .exp-en {
+            direction: ltr;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+            color: #334155;
+            margin-top: 6px;
+            font-size: 0.92rem;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+        }
+
+        .btn-nav {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-nav:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-nav:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 750px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 26px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+            animation: popIn 0.25s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .close-btn {
+            background: #f1f5f9;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+        }
+
+        .close-btn:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+        }
+
+        .grid-index {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .index-pill {
+            background: #f8fafc;
+            border: 2px solid var(--border);
+            padding: 10px 4px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            color: #334155;
+        }
+
+        .index-pill:hover {
+            border-color: var(--primary);
+            background: #f0f9ff;
+            transform: translateY(-2px);
+        }
+
+        .index-pill.active {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2);
+            font-weight: 900;
+        }
+
+        .index-pill.solved-correct {
+            background: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #15803d !important;
+        }
+
+        .index-pill.solved-wrong {
+            background: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #b91c1c !important;
+        }
+
+        .results-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .trophy {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: #f0f9ff;
+            border: 6px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+        }
+
+        .score-num {
+            font-size: 2.4rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .btn-restart {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 14px 34px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: 0.2s;
+        }
+
+        .btn-restart:hover {
+            transform: scale(1.03);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>اختبار React Hooks: التركيز على useRef وإدارة الريندر (20 سؤالاً)</h1>
+        <p>Bilingual Quiz: Mastering useRef, DOM Access, Preventing Re-renders & Render Counting</p>
+    </header>
+
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span class="stat-label">رقم السؤال / Question</span>
+            <div><span class="stat-val" id="qCurrent">1</span> / 20</div>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">أول محاولة / 1st Score 🎯</span>
+            <span class="stat-val" style="color: #0284c7;" id="firstScore">--</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">الدرجة الحالية / Score</span>
+            <span class="stat-val" id="score">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">أعلى نتيجة / High Score 🏆</span>
+            <span class="stat-val high" id="highScore">0</span>
+        </div>
+        <div>
+            <button class="btn-index" onclick="openIndexModal()">
+                <span>📑</span>
+                <span>فهرس الأسئلة (1-20)</span>
+            </button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <div class="q-card" id="quizCard">
+        <div class="q-header">
+            <span class="q-badge" id="topicBadge">React useRef Concept</span>
+            <span style="color: var(--text-muted); font-size: 0.9rem;" id="qStatusIndicator">لم يُجب بعد / Not answered</span>
+        </div>
+        
+        <div class="q-text-ar" id="questionTextAr">جاري تحميل السؤال...</div>
+        <div class="q-text-en" id="questionTextEn">Loading question...</div>
+        
+        <div class="options-list" id="optionsContainer"></div>
+        
+        <div class="explanation" id="explanationText"></div>
+
+        <div class="actions">
+            <button class="btn-nav" id="prevBtn" onclick="prevQuestion()" disabled>➡️ السابق / Prev</button>
+            <button class="btn-nav" id="nextBtn" onclick="nextQuestion()">التالي / Next ⬅️</button>
+        </div>
+    </div>
+
+    <div class="results-card" id="resultsCard">
+        <div class="trophy" id="trophyIcon">🎉</div>
+        <h2 id="resultMsg" style="font-size: 1.8rem; margin-bottom: 8px;">أحسنت صنعاً!</h2>
+        <p id="resultSubtitle" style="color: var(--text-muted);">You completed all 20 React useRef questions!</p>
+        
+        <div class="score-circle">
+            <div class="score-num" id="finalScore">0</div>
+            <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">/ 20</span>
+        </div>
+
+        <p id="highScoreNotice" style="font-weight: 700; font-size: 1.1rem; color: var(--accent); margin-top: 10px;"></p>
+
+        <button class="btn-restart" onclick="restartQuiz()">إعادة الاختبار من البداية 🔄</button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="indexModal" onclick="closeIndexModalOnOutside(event)">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📑 فهرس أسئلة useRef في React</h3>
+            <button class="close-btn" onclick="closeIndexModal()">✕</button>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background: #22c55e;"></div><span>إجابة صحيحة</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background: #ef4444;"></div><span>إجابة خاطئة</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background: #0284c7;"></div><span>السؤال الحالي</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background: #e2e8f0; border: 1px solid #cbd5e1;"></div><span>لم يُحل بعد</span></div>
+        </div>
+
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">انقر على أي رقم سؤال للانتقال إليه مباشرة:</p>
+        
+        <div class="grid-index" id="gridIndexContainer"></div>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            topic: "React useRef - Return Value",
+            ar_q: "ما الهيكل الذي تُرجعه الدالة useRef(initialValue) في React؟",
+            en_q: "What data structure does useRef(initialValue) return in React?",
+            options: [
+                { ar: "مصفوفة تحتوي على القيمة ودالة لتعديلها [value, setValue]", en: "An array containing the value and setter [value, setValue]" },
+                { ar: "كائن قابل للتعديل يحتوي على خاصية واحدة فقط هي { current: initialValue }", en: "A mutable object containing a single property: { current: initialValue }" },
+                { ar: "عنصر DOM حقيقي من نوع HTMLInputElement مباشرة", en: "A real HTMLInputElement DOM element directly" },
+                { ar: "قيمة ثابتة لا يمكن تغييرها (Immutable Primitive)", en: "An immutable primitive value" }
+            ],
+            correct: 1,
+            exp_ar: "تُرجع useRef كائناً يحتوي على الخاصية .current، ويبقى نفس الكائن محفوظاً طوال دورة حياة المكون.",
+            exp_en: "useRef returns a plain JavaScript object with a .current property that persists across renders."
+        },
+        {
+            topic: "React useRef - Re-renders Behavior",
+            ar_q: "ماذا يحدث عند تغيير قيمة ref.current مقارنةً بتغيير حالة useState؟",
+            en_q: "What happens when ref.current is updated compared to updating a useState setter?",
+            options: [
+                { ar: "يؤدي كلاهما إلى إعادة ريندر المكون فوراً", en: "Both trigger a component re-render immediately" },
+                { ar: "تعديل ref.current لا يُطلق Re-render للمكون على الإطلاق", en: "Updating ref.current does NOT trigger a component re-render" },
+                { ar: "تعديل ref.current يُحذف المكون من شجرة الـ DOM", en: "Updating ref.current unmounts the component from the DOM" },
+                { ar: "useRef تجبر React على إعادة تحميل الصفحة بالكامل", en: "useRef forces React to fully reload the page" }
+            ],
+            correct: 1,
+            exp_ar: "تعديل قيمة ref.current هو تعديل مباشر لكائن في الذاكرة (mutation)، ولا تلاحظه React كإشارة لإعادة تصيير (re-render) المكون.",
+            exp_en: "Mutating ref.current is a silent change that does not cause React to trigger a re-render."
+        },
+        {
+            topic: "React useRef - Counting Renders",
+            ar_q: "في الكود الأول، لماذا استخدمنا useRef(1) لحساب مرات الريندر بدلاً من useState؟",
+            en_q: "In the first snippet, why did we use useRef(1) to track renders instead of useState?",
+            options: [
+                { ar: "لأن useState ممنوعة تماماً داخل المكونات الوظيفية", en: "Because useState is disallowed in functional components" },
+                { ar: "لأن زيادة useState داخل useEffect دون مصفوفة تبعيات ستؤدي لحلقة ريندر لا نهائية (Infinite Loop)", en: "Because updating useState inside useEffect without deps creates an infinite render loop" },
+                { ar: "لأن useRef أسرع في التعامل مع النصوص من useState", en: "Because useRef processes strings faster than useState" },
+                { ar: "لأن useState لا تدعم الأرقام الصحيحة", en: "Because useState cannot hold integer values" }
+            ],
+            correct: 1,
+            exp_ar: "لو استخدمنا setCount(count + 1) داخل useEffect بدون dependency array، لتسبب كل ريندر في زيادة العداد مما يُطلق ريندر جديد إلى ما لا نهاية.",
+            exp_en: "Setting state inside an unconstrained useEffect triggers another render, causing an infinite loop."
+        },
+        {
+            topic: "React useRef - DOM Binding",
+            ar_q: "كيف يتم ربط كائن المرجع بحقل الإدخال في JSX كما في الكود الثاني؟",
+            en_q: "How is the ref object bound to the input element in JSX as shown in snippet 2?",
+            options: [
+                { ar: "عن طريق الخاصية ref={inputRef}", en: "Via the ref attribute: ref={inputRef}" },
+                { ar: "عن طريق id={inputRef}", en: "Via the id attribute: id={inputRef}" },
+                { ar: "عن طريق bind={inputRef.current}", en: "Via the bind attribute: bind={inputRef.current}" },
+                { ar: "عن طريق onChange={inputRef}", en: "Via the onChange attribute: onChange={inputRef}" }
+            ],
+            correct: 0,
+            exp_ar: "توفر React خاصية مدمجة تُسمى ref لتمرير كائن المرجع إلى عنصر DOM، فتقوم تلقائياً بتعيين عنصر الـ DOM في inputRef.current.",
+            exp_en: "React provides the special 'ref' attribute on JSX elements to connect a ref object to the underlying DOM node."
+        },
+        {
+            topic: "React useRef - Initial State",
+            ar_q: "ما قيمة inputRef.current في لحظة التصيير الأولى (قبل اكتمال تركيب المكون في DOM)؟",
+            en_q: "What is the value of inputRef.current on initial render before mounting to the DOM?",
+            options: [
+                { ar: "العنصر <input> مباشرة", en: "The actual <input> element directly" },
+                { ar: "القيمة الممررة كقيمة أولية (وهي null)", en: "The initial passed argument (which is null)" },
+                { ar: "undefined دائماً", en: "Always undefined" },
+                { ar: "رقم 0", en: "The number 0" }
+            ],
+            correct: 1,
+            exp_ar: "عند كتابة useRef(null)، تكون القيمة الابتدائية لـ .current هي null، وتقوم React بربط عنصر الـ DOM بعد بناء الشجرة وعرضها.",
+            exp_en: "Initially, inputRef.current holds the passed initial argument (null) until React mounts the element."
+        },
+        {
+            topic: "React useRef - Focus Method",
+            ar_q: "ما الغرض من استدعاء inputRef.current.focus() داخل دالة focusInput؟",
+            en_q: "What is the purpose of calling inputRef.current.focus() inside focusInput?",
+            options: [
+                { ar: "تفريغ محتوى حقل الإدخال بالكامل", en: "Clearing the entire input value" },
+                { ar: "نقل مؤشر الكتابة مباشرة إلى حقل الإدخال ليتمكن المستخدم من الكتابة فوراً", en: "Focusing the cursor inside the input field so the user can type immediately" },
+                { ar: "إعادة بناء المكون من جديد", en: "Re-rendering the component from scratch" },
+                { ar: "تغيير لون خلفية الصفحة", en: "Changing the page background color" }
+            ],
+            correct: 1,
+            exp_ar: "الدالة .focus() هي إحدى دوال الـ DOM الأصلية التي تضع مؤشر الكتابة داخل العنصر، والوصول إليها عبر useRef آمن ونظيف.",
+            exp_en: ".focus() is a native DOM method that places the keyboard focus inside the input element."
+        },
+        {
+            topic: "React useEffect - renderCount Logic",
+            ar_q: "لماذا تم تنفيذ renderCount.current = renderCount.current + 1 داخل useEffect؟",
+            en_q: "Why is renderCount.current incremented inside useEffect instead of directly in the component body?",
+            options: [
+                { ar: "لأن تعديل المراجع (Refs) أثناء عملية الريندر الصرفة يُعتبر Side Effect غير مستحب في React", en: "Because mutating refs during pure rendering is an unwanted side effect in React" },
+                { ar: "لأن useRef لا تعمل خارج دالة useEffect", en: "Because useRef does not function outside useEffect" },
+                { ar: "لإلغاء الاشتراك في الأحداث تلقائياً", en: "To automatically unsubscribe from event listeners" },
+                { ar: "لإجبار المتصفح على عمل refresh", en: "To force the browser to perform a hard refresh" }
+            ],
+            correct: 0,
+            exp_ar: "تعديل المتغيرات والمراجع هو تأثير جانبي (Side Effect)، وأفضل مكان لتنفيذه بعد انتهاء التصيير وظهور العنصر هو داخل useEffect.",
+            exp_en: "Mutating ref values during the render phase breaks React's pure rendering rules; it belongs in useEffect."
+        },
+        {
+            topic: "React useEffect - Dependencies Effect",
+            ar_q: "في الكود الأول: useEffect بدون مصفوفة تبعيات (no dependency array) يعني:",
+            en_q: "In snippet 1: useEffect without a dependency array means:",
+            options: [
+                { ar: "أنه سيعمل مرة واحدة فقط عند تحميل المكون لأول مرة", en: "It will execute only once on initial mount" },
+                { ar: "أنه سيعمل بعد كل عملية ريندر (Render) تحدث للمكون", en: "It will execute after every single render of the component" },
+                { ar: "أنه لن ينفذ نهائياً", en: "It will never execute at all" },
+                { ar: "أنه سيعمل فقط عند إغلاق التطبيق", en: "It executes only when the app closes" }
+            ],
+            correct: 1,
+            exp_ar: "عند ترك useEffect دون تمرير مصفوفة تبعيات (لا توجد [])، يُنفذ التأثير بعد كل عملية تصيير (render) يقوم بها المكون.",
+            exp_en: "Omitting the dependency array causes useEffect to run after the initial render and every subsequent update."
+        },
+        {
+            topic: "React useState vs useRef",
+            ar_q: "عند كتابة حرف في حقل الإدخال setText(event.target.value)، ما الذي يتسبب في زيادة renderCount؟",
+            en_q: "When typing into the input setText(...), what actually causes renderCount to increase?",
+            options: [
+                { ar: "تحديث setText يُطلق ريندر جديد للمكون، مما يجعل useEffect تعمل وتزيد العداد", en: "setText triggers a re-render, which causes useEffect to run and increment the counter" },
+                { ar: "useRef تقوم بإعادة تصيير المكون بنفسها", en: "useRef re-renders the component on its own" },
+                { ar: "حدث onFocus يقوم بزيادة العداد", en: "The onFocus event increments the counter" },
+                { ar: "المتصفح هو من يقوم بزيادتها عند الضغط على أزرار الكيبورد", en: "The browser increments it natively on keystroke" }
+            ],
+            correct: 0,
+            exp_ar: "تعديل State النص بـ setText يُسبب Re-render للمكون، وبعد انتهاء الريندر يُنفذ useEffect فيزيد عداد الـ ref بمقدار 1.",
+            exp_en: "Updating 'text' state causes a re-render, and subsequent execution of useEffect increments renderCount.current."
+        },
+        {
+            topic: "React useRef - Persistence",
+            ar_q: "هل تحتفظ useRef بقيمتها المخزنة بين عمليات إعادة الريندر المتتالية؟",
+            en_q: "Does useRef persist its stored value across consecutive re-renders?",
+            options: [
+                { ar: "لا، يتم إعادة ضبطها لقيمتها الابتدائية في كل ريندر", en: "No, it resets to its initial value on every render" },
+                { ar: "نعم، تبقى القيمة محفوظة طوال دورة حياة المكون دون أن تُفقد", en: "Yes, it retains its value throughout the component's full lifecycle" },
+                { ar: "تحتفظ بها لمدة 5 ثوانٍ فقط ثم تُحذف", en: "It holds it for only 5 seconds then deletes it" },
+                { ar: "تحتفظ بها فقط إذا كانت الصفحة مفتوحة في وضع المتخفي", en: "Only if the tab is in incognito mode" }
+            ],
+            correct: 1,
+            exp_ar: "ميزة useRef الأساسية هي أنها تعمل مثل متغير مثيل (instance variable) يحتفظ بقيمته بين الريندرز دون أن يُعاد تعريفه.",
+            exp_en: "useRef guarantees that the exact same reference object is preserved across all renders."
+        },
+        {
+            topic: "React - Direct DOM vs document.getElementById",
+            ar_q: "لماذا يُفضل استخدام useRef للوصول لـ DOM بدلاً من document.querySelector أو getElementById؟",
+            en_q: "Why is useRef preferred for DOM access over document.querySelector or getElementById?",
+            options: [
+                { ar: "لأن الطرق التقليدية لا تعمل في بيئات الجافاسكربت الحديثة", en: "Because traditional methods fail in modern JS environments" },
+                { ar: "لأن useRef ترتبط بالعنصر الخاص بنفس المكون وتمنع التضارب بين النسخ المتعددة منه", en: "Because useRef encapsulates the node inside the component instance, avoiding global conflicts" },
+                { ar: "لأن getElementById تحظرها مكتبة React تماماً وتطلق SyntaxError", en: "Because getElementById is blocked by React and throws a SyntaxError" },
+                { ar: "لأن useRef تجعل عناصر DOM غير قابلة للقراءة", en: "Because useRef makes DOM nodes unreadable" }
+            ],
+            correct: 1,
+            exp_ar: "استخدام useRef يربط العنصر بمكونه تحديداً حتى لو تكرر المكون 10 مرات في الصفحة دون الحاجة لـ IDs عالمية تسبب أخطاء تضارب.",
+            exp_en: "useRef ensures component encapsulation and avoids collisions when multiple component instances exist on the page."
+        },
+        {
+            topic: "React useRef - JSX Display Caution",
+            ar_q: "لماذا يُعتبر عرض {renderCount.current} مباشرة في الـ JSX بدون استدعاء setState فكرة غير موثوقة في بعض الحالات؟",
+            en_q: "Why is reading/displaying {renderCount.current} directly in JSX risky if no state update accompanies it?",
+            options: [
+                { ar: "لأن تغيير الـ ref بمفرده لن يُحدث الشاشة ولن يرى المستخدم القيمة الجديدة فوراً", en: "Because mutating a ref alone won't update the UI, so the user won't see the change immediately" },
+                { ar: "لأن JSX لا تقبل سوى النصوص الثابتة", en: "Because JSX only accepts static strings" },
+                { ar: "لأن ذلك يمنع المتصفح من استخدام CSS", en: "Because it disables browser CSS styling" },
+                { ar: "لأن React تمنع كتابة علامة القوسين {} داخل الـ JSX", en: "Because curly braces are forbidden inside JSX" }
+            ],
+            correct: 0,
+            exp_ar: "إذا تغيرت ref.current ولم يحدث ريندر بسبب state آخر، فلن تظهر القيمة الجديدة على الشاشة إطلاقاً لأن الـ UI لم يُحدث.",
+            exp_en: "Since ref updates don't cause re-renders, displaying them directly in JSX without a coinciding state change can leave the UI stale."
+        },
+        {
+            topic: "React useRef - Optional Chaining",
+            ar_q: "لماذا يُنصح أحياناً بكتابة inputRef.current?.focus() باستخدام علامة الاستفهام؟",
+            en_q: "Why is it best practice to write inputRef.current?.focus() with optional chaining?",
+            options: [
+                { ar: "لتجنب حدوث خطأ Cannot read properties of null إذا لم يكن العنصر موجوداً في الـ DOM بعد", en: "To prevent errors like 'Cannot read properties of null' if the node hasn't mounted yet" },
+                { ar: "لتأكيد الرغبة في إرسال استعلام للـ Backend", en: "To confirm a query is dispatched to the backend" },
+                { ar: "لتسريع سرعة كتابة المستخدم على الكيبورد", en: "To accelerate keyboard input speed" },
+                { ar: "لأن focus تحتاج علامة استفهام لتعمل", en: "Because focus requires a question mark to work" }
+            ],
+            correct: 0,
+            exp_ar: "في حال تم النقر على الزر قبل اكتمال ربط العنصر أو عند إخفاء العنصر بشرط (Conditional Rendering)، تحمي ?. الكود من الانهيار.",
+            exp_en: "Optional chaining avoids runtime crashes when .current is still null before mounting or after unmounting."
+        },
+        {
+            topic: "React useRef - Comparison with Normal Variable",
+            ar_q: "ما الفرق بين const count = useRef(0) وكتابة let count = 0 داخل جسم المكون؟",
+            en_q: "What is the difference between const count = useRef(0) and let count = 0 inside the component body?",
+            options: [
+                { ar: "لا يوجد أي فرق على الإطلاق", en: "There is no difference at all" },
+                { ar: "المتغير let يُعاد تعيينه إلى 0 في كل ريندر، بينما useRef تحافظ على قيمتها بين الريندرز", en: "The 'let' variable resets to 0 on every render, while useRef preserves its value across renders" },
+                { ar: "useRef تعمل فقط على الخادم (Server Side)", en: "useRef functions exclusively on the server" },
+                { ar: "المتغير let يمنع إعادة تصيير الصفحة", en: "The 'let' variable prevents component re-rendering" }
+            ],
+            correct: 1,
+            exp_ar: "المتغير العادي يُعاد تهيئته من الصفر في كل استدعاء لدالة المكون، بينما يحتفظ useRef بنفس المرجع في الذاكرة.",
+            exp_en: "Normal local variables are re-instantiated every render; useRef maintains persistent state across re-renders."
+        },
+        {
+            topic: "React useRef - Uncontrolled Inputs",
+            ar_q: "استخدام inputRef لقراءة قيمة الحقل مباشرة inputRef.current.value دون useState يُسمى:",
+            en_q: "Reading an input's value directly via inputRef.current.value without useState is known as:",
+            options: [
+                { ar: "مكون مُتحكم به (Controlled Component)", en: "Controlled Component" },
+                { ar: "مكون غير مُتحكم به (Uncontrolled Component)", en: "Uncontrolled Component" },
+                { ar: "مكون متزامن غير متزامن (Async Component)", en: "Asynchronous Component" },
+                { ar: "مكون افتراضي (Virtual Component)", en: "Virtual Component" }
+            ],
+            correct: 1,
+            exp_ar: "تسمى المكونات التي يدير الـ DOM حالتها الداخلية ونصل إليها بالـ Ref بـ Uncontrolled Components.",
+            exp_en: "When the DOM itself maintains form input state and React reads it via refs, it is called an Uncontrolled Component."
+        },
+        {
+            topic: "React useRef - Storing Timers",
+            ar_q: "بالإضافة للوصول إلى DOM، ما الاستخدام الشائع الآخر لـ useRef؟",
+            en_q: "Besides accessing DOM nodes, what is another primary use case for useRef?",
+            options: [
+                { ar: "تخزين معرّفات المؤقتات (Timers/Interval IDs) للتخلص منها لاحقاً دون إحداث Re-render", en: "Storing timer/interval IDs to clear them later without causing re-renders" },
+                { ar: "تنسيق عناصر HTML بأكواد CSS مباشرة", en: "Styling HTML elements with direct CSS stylesheets" },
+                { ar: "إرسال طلبات الـ HTTP بدلاً من fetch", en: "Dispatching HTTP requests in place of fetch" },
+                { ar: "إدارة التوجيه والانتقال بين الصفحات (Routing)", en: "Managing routing between pages" }
+            ],
+            correct: 0,
+            exp_ar: "تُستخدم useRef بشكل واسع لتخزين timerId الخاص بـ setInterval أو setTimeout حتى نتمكن من تنظيفه بـ clearInterval.",
+            exp_en: "useRef is ideal for storing mutable values like timer IDs that shouldn't trigger UI updates when modified."
+        },
+        {
+            topic: "React useRef - Component Unmount",
+            ar_q: "ماذا تفعل React بقيمة inputRef.current عندما يتم إلغاء تثبيت العنصر (Unmount) من الشاشة؟",
+            en_q: "What does React set inputRef.current to when the referenced DOM element unmounts?",
+            options: [
+                { ar: "تتركها محتفظة بالعنصر المحذوف في الذاكرة", en: "It leaves the removed DOM node in memory" },
+                { ar: "تُعيد تعيين inputRef.current إلى null تلقائياً", en: "It automatically resets inputRef.current back to null" },
+                { ar: "تُغير قيمتها إلى رقم -1", en: "It changes its value to -1" },
+                { ar: "تُطلق استثناء fatal error", en: "It throws a fatal runtime exception" }
+            ],
+            correct: 1,
+            exp_ar: "عند إزالة العنصر من شجرة الـ DOM، تُعين React القيمة .current إلى null لتفادي تسريبات الذاكرة (Memory Leaks).",
+            exp_en: "React sets .current back to null when the referenced DOM node is removed from the DOM tree."
+        },
+        {
+            topic: "React useRef - Forwarding Refs",
+            ar_q: "إذا أردت تمرير inputRef إلى مكون مخصص (Custom Component) لربطه بـ input داخله، ما الأداة المستخدمة؟",
+            en_q: "If you want to pass inputRef down to a custom component to bind an inner input, what React API is used?",
+            options: [
+                { ar: "forwardRef (أو تمرير ref كـ prop عادي في React 19)", en: "forwardRef (or passing ref as a regular prop in React 19)" },
+                { ar: "useMemo", en: "useMemo" },
+                { ar: "useReducer", en: "useReducer" },
+                { ar: "createPortal", en: "createPortal" }
+            ],
+            correct: 0,
+            exp_ar: "تُستخدم forwardRef لنقل المرجع إلى مكون ابن وربطه بعنصر DOM بالداخل (وفي React 19 أصبح بالإمكان تمرير ref كخاصية عادية).",
+            exp_en: "React.forwardRef allows a component to receive a ref and pass it further down to an internal child DOM node."
+        },
+        {
+            topic: "React useRef - Storing Previous State",
+            ar_q: "كيف يمكن لـ useRef أن تساعدنا في تتبع 'القيمة السابقة' (Previous Value) لحالة ما؟",
+            en_q: "How can useRef help us track the 'previous value' of a piece of state?",
+            options: [
+                { ar: "بتخزين القيمة الحالية في ref داخل useEffect، فتكون ref.current حاملة للقيمة السابقة أثناء الريندر", en: "By storing the value in a ref inside useEffect, so ref.current holds the previous value during render" },
+                { ar: "بإلغاء خاصية history في المتصفح", en: "By disabling browser history capabilities" },
+                { ar: "بإجبار المكون على استخدام localStorage إجبارياً", en: "By strictly forcing the component to use localStorage" },
+                { ar: "لا يمكن لـ useRef القيام بذلك نهائياً", en: "useRef cannot achieve this under any circumstances" }
+            ],
+            correct: 0,
+            exp_ar: "نظراً لأن useEffect تعمل بعد انتهاء الريندر، يقرأ المكون القيمة القديمة من الـ ref ثم يُحدثها الـ effect لتكون جاهزة للريندر القادم.",
+            exp_en: "Because useEffect executes after rendering, ref.current retains the prior render's value during the current render."
+        },
+        {
+            topic: "React Rules of Hooks",
+            ar_q: "أين يجب استدعاء الدالة useRef داخل كود React وفقاً لقواعد الخطافات (Rules of Hooks)؟",
+            en_q: "Where must useRef be called according to the React Rules of Hooks?",
+            options: [
+                { ar: "داخل الدوال المساعدة (Helper functions) أو حلقات التكرار (Loops)", en: "Inside helper functions or inside loops" },
+                { ar: "في المستوى الأعلى (Top level) للمكون الوظيفي أو داخل Hook مخصص فقط", en: "At the top level of the functional component or inside a custom hook only" },
+                { ar: "داخل الجمل الشرطية مثل if (condition) { useRef() }", en: "Inside conditional blocks like if (condition) { useRef() }" },
+                { ar: "خارج أي دالة في نطاق الملف العام (Global Scope)", en: "Outside all functions in the global module scope" }
+            ],
+            correct: 1,
+            exp_ar: "شأنها شأن جميع خطافات React، يجب استدعاء useRef في أعلى مستوى للمكون وألا توضع أبداً داخل شروط أو حلقات أو دوال متداخلة.",
+            exp_en: "Like all hooks, useRef must be called unconditionally at the top level of your component."
+        }
+    ];
+
+    let userAnswers = new Array(questions.length).fill(null);
+    let currentIdx = 0;
+    let score = 0;
+
+    function loadScores() {
+        const storedHigh = localStorage.getItem('react_useref_highscore');
+        const high = storedHigh ? parseInt(storedHigh) : 0;
+        document.getElementById('highScore').innerText = high;
+
+        const storedFirst = localStorage.getItem('react_useref_first_score');
+        if (storedFirst !== null) {
+            document.getElementById('firstScore').innerText = storedFirst;
+        } else {
+            document.getElementById('firstScore').innerText = "--";
+        }
+        return { high, first: storedFirst };
+    }
+
+    function saveScores(finalScore) {
+        let isFirstTime = false;
+        if (localStorage.getItem('react_useref_first_score') === null) {
+            localStorage.setItem('react_useref_first_score', finalScore);
+            document.getElementById('firstScore').innerText = finalScore;
+            isFirstTime = true;
+        }
+
+        const currentHigh = parseInt(localStorage.getItem('react_useref_highscore') || '0');
+        let isNewHigh = false;
+        if (finalScore > currentHigh) {
+            localStorage.setItem('react_useref_highscore', finalScore);
+            document.getElementById('highScore').innerText = finalScore;
+            isNewHigh = true;
+        }
+
+        return { isFirstTime, isNewHigh };
+    }
+
+    function calculateScore() {
+        let s = 0;
+        for (let i = 0; i < questions.length; i++) {
+            if (userAnswers[i] !== null && userAnswers[i] === questions[i].correct) {
+                s++;
+            }
+        }
+        score = s;
+        document.getElementById('score').innerText = score;
+        return score;
+    }
+
+    function displayQuestion() {
+        const q = questions[currentIdx];
+        document.getElementById('qCurrent').innerText = currentIdx + 1;
+        document.getElementById('topicBadge').innerText = q.topic;
+        document.getElementById('questionTextAr').innerText = (currentIdx + 1) + ". " + q.ar_q;
+        document.getElementById('questionTextEn').innerText = "Q" + (currentIdx + 1) + ": " + q.en_q;
+
+        const answeredCount = userAnswers.filter(a => a !== null).length;
+        const pct = (answeredCount / questions.length) * 100;
+        document.getElementById('progressBar').style.width = pct + '%';
+
+        const container = document.getElementById('optionsContainer');
+        container.innerHTML = '';
+
+        const expBox = document.getElementById('explanationText');
+        const statusIndicator = document.getElementById('qStatusIndicator');
+
+        const prevAns = userAnswers[currentIdx];
+
+        if (prevAns === null) {
+            statusIndicator.innerText = "لم يُجب بعد / Not answered";
+            statusIndicator.style.color = "var(--text-muted)";
+            expBox.style.display = 'none';
+        } else {
+            statusIndicator.innerText = prevAns === q.correct ? "✅ إجابة صحيحة مسجلة" : "❌ إجابة خاطئة مسجلة";
+            statusIndicator.style.color = prevAns === q.correct ? "var(--success)" : "var(--danger)";
+            showExplanation(prevAns === q.correct, prevAns);
+        }
+
+        q.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'opt-btn';
+            btn.innerHTML = `
+                <div class="opt-ar">${['أ', 'ب', 'ج', 'د'][idx]}) ${opt.ar}</div>
+                <div class="opt-en">${['A', 'B', 'C', 'D'][idx]}) ${opt.en}</div>
+            `;
+
+            if (prevAns !== null) {
+                btn.disabled = true;
+                if (idx === q.correct) {
+                    btn.classList.add('correct');
+                } else if (idx === prevAns) {
+                    btn.classList.add('wrong');
+                }
+            } else {
+                btn.onclick = () => selectAnswer(idx);
+            }
+            container.appendChild(btn);
+        });
+
+        document.getElementById('prevBtn').disabled = (currentIdx === 0);
+        document.getElementById('nextBtn').innerText = (currentIdx === questions.length - 1) ? "إنهاء الاختبار / Finish 🏁" : "التالي / Next ⬅️";
+    }
+
+    function selectAnswer(chosenIdx) {
+        if (userAnswers[currentIdx] !== null) return;
+
+        userAnswers[currentIdx] = chosenIdx;
+        calculateScore();
+
+        const q = questions[currentIdx];
+        const isCorrect = (chosenIdx === q.correct);
+
+        const buttons = document.querySelectorAll('.opt-btn');
+        buttons.forEach(b => b.disabled = true);
+
+        if (isCorrect) {
+            buttons[chosenIdx].classList.add('correct');
+        } else {
+            buttons[chosenIdx].classList.add('wrong');
+            buttons[q.correct].classList.add('correct');
+        }
+
+        showExplanation(isCorrect, chosenIdx);
+
+        const statusIndicator = document.getElementById('qStatusIndicator');
+        statusIndicator.innerText = isCorrect ? "✅ إجابة صحيحة مسجلة" : "❌ إجابة خاطئة مسجلة";
+        statusIndicator.style.color = isCorrect ? "var(--success)" : "var(--danger)";
+
+        const answeredCount = userAnswers.filter(a => a !== null).length;
+        document.getElementById('progressBar').style.width = ((answeredCount / questions.length) * 100) + '%';
+    }
+
+    function showExplanation(isCorrect, chosenIdx) {
+        const q = questions[currentIdx];
+        const expBox = document.getElementById('explanationText');
+
+        if (isCorrect) {
+            expBox.innerHTML = `
+                <b>✅ إجابة صحيحة / Correct!</b><br>
+                <div>${q.exp_ar}</div>
+                <div class="exp-en">${q.exp_en}</div>
+            `;
+            expBox.style.borderRightColor = 'var(--success)';
+        } else {
+            expBox.innerHTML = `
+                <b>❌ إجابة غير دقيقة / Incorrect!</b><br>
+                <div>الإجابة الصحيحة هي: <b>${q.options[q.correct].ar}</b></div>
+                <div class="exp-en">Correct choice: <b>${q.options[q.correct].en}</b></div>
+                <div style="margin-top: 6px;">${q.exp_ar}</div>
+                <div class="exp-en">${q.exp_en}</div>
+            `;
+            expBox.style.borderRightColor = 'var(--danger)';
+        }
+        expBox.style.display = 'block';
+    }
+
+    function nextQuestion() {
+        if (currentIdx < questions.length - 1) {
+            currentIdx++;
+            displayQuestion();
+        } else {
+            showFinalResults();
+        }
+    }
+
+    function prevQuestion() {
+        if (currentIdx > 0) {
+            currentIdx--;
+            displayQuestion();
+        }
+    }
+
+    function openIndexModal() {
+        buildIndexGrid();
+        document.getElementById('indexModal').style.display = 'flex';
+    }
+
+    function closeIndexModal() {
+        document.getElementById('indexModal').style.display = 'none';
+    }
+
+    function closeIndexModalOnOutside(e) {
+        if (e.target.id === 'indexModal') {
+            closeIndexModal();
+        }
+    }
+
+    function buildIndexGrid() {
+        const grid = document.getElementById('gridIndexContainer');
+        grid.innerHTML = '';
+
+        for (let i = 0; i < questions.length; i++) {
+            const pill = document.createElement('div');
+            pill.className = 'index-pill';
+            pill.innerText = (i + 1);
+
+            if (i === currentIdx) {
+                pill.classList.add('active');
+            }
+
+            if (userAnswers[i] !== null) {
+                if (userAnswers[i] === questions[i].correct) {
+                    pill.classList.add('solved-correct');
+                } else {
+                    pill.classList.add('solved-wrong');
+                }
+            }
+
+            pill.onclick = () => {
+                currentIdx = i;
+                displayQuestion();
+                closeIndexModal();
+            };
+
+            grid.appendChild(pill);
+        }
+    }
+
+    function showFinalResults() {
+        document.getElementById('quizCard').style.display = 'none';
+        document.getElementById('progressBar').style.width = '100%';
+
+        const resultsCard = document.getElementById('resultsCard');
+        resultsCard.style.display = 'block';
+
+        calculateScore();
+        document.getElementById('finalScore').innerText = score;
+        const res = saveScores(score);
+        const scores = loadScores();
+
+        const notice = document.getElementById('highScoreNotice');
+        const msg = document.getElementById('resultMsg');
+        const icon = document.getElementById('trophyIcon');
+
+        let textDetails = `🎯 أول محاولة مسجلة (First Attempt): ${scores.first} من 20<br>`;
+        if (res.isNewHigh && score > 0) {
+            textDetails += `🏆 مبروك! حققت رقماً قياسياً جديداً (New High Score): ${score} من 20!`;
+        } else {
+            textDetails += `🏆 أعلى نتيجة على هذا الجهاز (Best Score): ${scores.high} من 20`;
+        }
+        notice.innerHTML = textDetails;
+
+        if (score >= 18) {
+            msg.innerText = "ممتاز ومحترف! إتقان تام لـ useRef وإدارة الريندر في React 🌟";
+            icon.innerText = "👑";
+        } else if (score >= 14) {
+            msg.innerText = "جيد جداً! استيعاب رائع للفرق بين useState و useRef والتعامل مع DOM 👏";
+            icon.innerText = "🎉";
+        } else if (score >= 10) {
+            msg.innerText = "مستوى متوسط! ركّز على مفهوم منع الريندر وعلاقة useRef بـ useEffect 📖";
+            icon.innerText = "👍";
+        } else {
+            msg.innerText = "يُنصح بمراجعة أمثلة الكود والتجربة العملية لتثبيت المفاهيم 💡";
+            icon.innerText = "💡";
+        }
+    }
+
+    function restartQuiz() {
+        userAnswers = new Array(questions.length).fill(null);
+        currentIdx = 0;
+        score = 0;
+        document.getElementById('score').innerText = '0';
+        document.getElementById('resultsCard').style.display = 'none';
+        document.getElementById('quizCard').style.display = 'block';
+        displayQuestion();
+    }
+
+    window.onload = function() {
+        loadScores();
+        displayQuestion();
+    };
+</script>
+</body>
+</html>
+```eof
+
+### ملخص الاختبار المولد ومميزاته:
+1. **نفس بنية وتصميم القالب التفاعلي السابق تماماً:**
+   - واجهة ثنائية اللغة (عربي وإنجليزي).
+   - تتبع ذكي لأول محاولة (First Attempt) وأعلى درجة (High Score) عبر `localStorage`.
+   - شريط تقدم ديناميكي وفهرس تنقل منبثق (Modal) لجميع الأسئلة الـ 20 مع تلوين فوري للحالة (صحيح، خطأ، قيد الإجابة).
+2. **تغطية شاملة ومباشرة للكود ومفاهيم `useRef`:**
+   - بنية الكائن المرجع `{ current }`.
+   - منع إعادة الريندر عند تحديث المرجع بخلاف `useState`.
+   - سبب استخدام `renderCount` كـ `useRef` لمنع حدوث Infinite Loop داخل `useEffect`.
+   - ربط العناصر بخاصية `ref={inputRef}` واستدعاء `inputRef.current.focus()`.
+   - المكونات غير المتحكم بها (Uncontrolled Components) والاحتفاظ بالقيم السابقة وحفظ معرّفات المؤقتات (Timers).
