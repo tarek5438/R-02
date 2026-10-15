@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار تفاعلي: تحليل كود React Hooks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f4c81;
+            --primary-dark: #0b1e36;
+            --accent: #f59e0b;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 26px 20px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px -5px rgba(15, 76, 129, 0.25);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 1.7rem;
+            font-weight: 900;
+            margin-bottom: 6px;
+        }
+
+        header p {
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            direction: ltr;
+        }
+
+        .stats-bar {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 14px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            display: block;
+        }
+
+        .stat-val {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .stat-val.high {
+            color: var(--accent);
+        }
+
+        .btn-index {
+            background: #eff6ff;
+            color: var(--primary);
+            border: 2px solid #bfdbfe;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-index:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 6px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            transition: width 0.3s ease;
+        }
+
+        .q-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 10px 20px -3px rgba(0,0,0,0.06);
+            margin-bottom: 24px;
+        }
+
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .q-badge {
+            background: #eff6ff;
+            color: var(--primary);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .q-text-ar {
+            font-size: 1.25rem;
+            font-weight: 800;
+            line-height: 1.8;
+            margin-bottom: 8px;
+            color: #0f172a;
+        }
+
+        .q-text-en {
+            font-size: 1.02rem;
+            font-weight: 600;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #475569;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+            border-left: 3px solid var(--primary);
+            padding-left: 12px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .opt-btn {
+            background: #f8fafc;
+            border: 2px solid var(--border);
+            padding: 14px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            text-align: right;
+        }
+
+        .opt-btn:hover:not(:disabled) {
+            background: #eff6ff;
+            border-color: #93c5fd;
+            transform: translateX(-4px);
+        }
+
+        .opt-btn.correct {
+            background: #dcfce7 !important;
+            border-color: var(--success) !important;
+        }
+
+        .opt-btn.wrong {
+            background: #fee2e2 !important;
+            border-color: var(--danger) !important;
+        }
+
+        .opt-ar {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .opt-en {
+            font-size: 0.92rem;
+            font-weight: 600;
+            color: #64748b;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .opt-btn.correct .opt-ar, .opt-btn.correct .opt-en {
+            color: #15803d !important;
+        }
+
+        .opt-btn.wrong .opt-ar, .opt-btn.wrong .opt-en {
+            color: #991b1b !important;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 0.98rem;
+            line-height: 1.7;
+            display: none;
+            background: #f1f5f9;
+            border-right: 5px solid var(--primary);
+        }
+
+        .exp-en {
+            direction: ltr;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+            color: #334155;
+            margin-top: 6px;
+            font-size: 0.92rem;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+        }
+
+        .btn-nav {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-nav:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-nav:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 650px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 26px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+            animation: popIn 0.25s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .modal-header h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .close-btn {
+            background: #f1f5f9;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 4px;
+        }
+
+        .grid-index {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .index-pill {
+            background: #f8fafc;
+            border: 2px solid var(--border);
+            padding: 10px 4px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            color: #334155;
+        }
+
+        .index-pill:hover {
+            border-color: var(--primary);
+            background: #eff6ff;
+            transform: translateY(-2px);
+        }
+
+        .index-pill.active {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(15, 76, 129, 0.25);
+            font-weight: 900;
+        }
+
+        .index-pill.solved-correct {
+            background: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #15803d !important;
+        }
+
+        .index-pill.solved-wrong {
+            background: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #b91c1c !important;
+        }
+
+        .results-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .trophy {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: #eff6ff;
+            border: 6px solid var(--primary);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+        }
+
+        .score-num {
+            font-size: 2.4rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .btn-restart {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 14px 34px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: 0.2s;
+        }
+
+        .btn-restart:hover {
+            transform: scale(1.03);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>اختبار React Hooks البرمجي (20 سؤالاً)</h1>
+        <p>Bilingual Code Quiz: Deep Analysis of useState, useEffect, and useRef</p>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span class="stat-label">رقم السؤال / Question</span>
+            <div><span class="stat-val" id="qCurrent">1</span> / 20</div>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">أول محاولة / 1st Score 🎯</span>
+            <span class="stat-val" style="color: #6366f1;" id="firstScore">--</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">الدرجة الحالية / Score</span>
+            <span class="stat-val" id="score">0</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">أعلى نتيجة / High Score 🏆</span>
+            <span class="stat-val high" id="highScore">0</span>
+        </div>
+        <div>
+            <button class="btn-index" onclick="openIndexModal()">
+                <span>📑</span>
+                <span>فهرس الأسئلة (1-20)</span>
+            </button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </div>
+
+    <!-- Question Box -->
+    <div class="q-card" id="quizCard">
+        <div class="q-header">
+            <span class="q-badge" id="topicBadge">React Hook Quiz</span>
+            <span style="color: var(--text-muted); font-size: 0.9rem;" id="qStatusIndicator">لم يُجب بعد / Not answered</span>
+        </div>
+        
+        <div class="q-text-ar" id="questionTextAr">جاري تحميل السؤال...</div>
+        <div class="q-text-en" id="questionTextEn">Loading question...</div>
+        
+        <div class="options-list" id="optionsContainer"></div>
+        
+        <div class="explanation" id="explanationText"></div>
+
+        <div class="actions">
+            <button class="btn-nav" id="prevBtn" onclick="prevQuestion()" disabled>➡️ السابق / Prev</button>
+            <button class="btn-nav" id="nextBtn" onclick="nextQuestion()">التالي / Next ⬅️</button>
+        </div>
+    </div>
+
+    <!-- Results Box -->
+    <div class="results-card" id="resultsCard">
+        <div class="trophy" id="trophyIcon">🎉</div>
+        <h2 id="resultMsg" style="font-size: 1.8rem; margin-bottom: 8px;">أحسنت صنعاً!</h2>
+        <p id="resultSubtitle" style="color: var(--text-muted);">You completed all 20 questions!</p>
+        
+        <div class="score-circle">
+            <div class="score-num" id="finalScore">0</div>
+            <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted);">/ 20</span>
+        </div>
+
+        <p id="highScoreNotice" style="font-weight: 700; font-size: 1.1rem; color: var(--accent); margin-top: 10px;"></p>
+
+        <button class="btn-restart" onclick="restartQuiz()">إعادة الاختبار من البداية 🔄</button>
+    </div>
+</div>
+
+<!-- Modal Index Window -->
+<div class="modal-overlay" id="indexModal" onclick="closeIndexModalOnOutside(event)">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>📑 فهرس الانتقال السريع للأسئلة</h3>
+            <button class="close-btn" onclick="closeIndexModal()">✕</button>
+        </div>
+        
+        <div class="legend">
+            <div class="legend-item"><div class="legend-dot" style="background: #22c55e;"></div><span>إجابة صحيحة</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background: #ef4444;"></div><span>إجابة خاطئة</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background: #0f4c81;"></div><span>السؤال المفتوح حالياً</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background: #e2e8f0; border: 1px solid #cbd5e1;"></div><span>لم يُحل بعد</span></div>
+        </div>
+
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">اضغط على أي رقم للمعاينة أو حل السؤال مباشرة دون قيود:</p>
+        
+        <div class="grid-index" id="gridIndexContainer"></div>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            ar_q: "في الكود المذكور، ما الفرق العملي بين دور كل من inputRef و timerRef المنشأين بواسطة useRef؟",
+            en_q: "In the provided code, what is the practical difference between the roles of inputRef and timerRef created via useRef?",
+            options: [
+                { ar: "الأول يهدف لربط عنصر واجهة مستخدم (DOM)، بينما الثاني يحفظ معرف مؤقت في الذاكرة", en: "The first targets a DOM element reference, while the second stores an in-memory timer ID" },
+                { ar: "الأول يتسبب في إعادة تصيير المكون، بينما الثاني لا يحدث أي تصيير", en: "The first triggers component re-renders, while the second never does" },
+                { ar: "الأول يقبل قيماً رقمية فقط، بينما الثاني مخصص للنصوص", en: "The first accepts numbers only, whereas the second is strictly for strings" },
+                { ar: "كلاهما مخصص لإلغاء المؤقتات الزمنية بالتناوب", en: "Both are designed to cancel active timers interchangeably" }
+            ],
+            correct: 0,
+            exp_ar: "دالة useRef تستخدم إما للوصول إلى عناصر الـ DOM (مثل inputRef لعمل التركيز)، أو كصندوق متغير (Mutable Container) لحفظ قيم حية مثل معرف الـ timer دون تفعيل re-render.",
+            exp_en: "useRef serves two primary use cases: referencing direct DOM nodes (inputRef) and holding mutable instance values across renders (timerRef)."
+        },
+        {
+            ar_q: "عندما تتغير قيمة المتغير seconds، هل يُعاد تشغيل الـ useEffect الأول المسؤول عن المؤقت؟",
+            en_q: "When the 'seconds' state changes, does the first useEffect (timer effect) re-run?",
+            options: [
+                { ar: "نعم، لأن seconds معرف كحالة في المكون", en: "Yes, because seconds is declared as component state" },
+                { ar: "لا، لأن مصفوفة اعتماده تحتوي فقط على [isActive]", en: "No, because its dependency array only contains [isActive]" },
+                { ar: "نعم، في حالة كان taskName غير فارغ", en: "Yes, provided that taskName is non-empty" },
+                { ar: "لا، لأن setInterval تمنع إعادة التشغيل دائماً", en: "No, because setInterval always prevents re-execution" }
+            ],
+            correct: 1,
+            exp_ar: "الـ useEffect الأول يرتبط فقط بـ [isActive]، ولن يعاد تنفيذه بتغير seconds.",
+            exp_en: "The first effect only watches [isActive], so changes to seconds will not re-trigger it."
+        },
+        {
+            ar_q: "ما هي المشكلة المنطقية الخفية (Stale Closure) في دالة setInterval الحالية عند تشغيل المؤقت؟",
+            en_q: "What subtle logical bug (stale closure) occurs in the current setInterval implementation?",
+            options: [
+                { ar: "المؤقت سيتوقف عند الرقم 1 ولن يزداد لأن seconds محبوسة بقيمتها الابتدائية (0)", en: "Timer gets stuck at 1 because seconds is captured at initial value (0)" },
+                { ar: "المتصفح سيطلق خطأ SyntaxError ويتوقف", en: "Browser throws a fatal SyntaxError and halts" },
+                { ar: "المؤقت سيعد مرتين في الثانية الواحدة", en: "The timer ticks twice per second" },
+                { ar: "سيتم مسح اسم المهمة taskName تلقائياً", en: "taskName state is cleared automatically" }
+            ],
+            correct: 0,
+            exp_ar: "بسبب انغلاق الدالة (Closure) وعدم وضع seconds في الاعتماديات، تبقى قيمة seconds مساوية 0 داخل الـ interval، فيظل يحسب 0 + 1 = 1 دائماً.",
+            exp_en: "Due to a stale closure, the interval callback captures seconds as 0 and repeatedly updates it to 0 + 1 = 1."
+        },
+        {
+            ar_q: "كيف نصلح مشكلة زيادة الثواني بدقة دون الحاجة لإضافة seconds لمصفوفة اعتماديات المؤقت؟",
+            en_q: "How can the seconds update be fixed properly without adding seconds to the timer dependency array?",
+            options: [
+                { ar: "كتابة setSeconds(++seconds)", en: "Writing setSeconds(++seconds)" },
+                { ar: "استخدام تحديث الحالة بالدالة: setSeconds(prev => prev + 1)", en: "Using a functional state update: setSeconds(prev => prev + 1)" },
+                { ar: "تغيير 1000 إلى 2000 مللي ثانية", en: "Changing 1000 to 2000 milliseconds" },
+                { ar: "تحويل seconds إلى متغير عادي let خارج المكون", en: "Converting seconds to an external let variable" }
+            ],
+            correct: 1,
+            exp_ar: "التحديث الوظيفي (Functional update) يجلب أحدث قيمة للحالة من الذاكرة دون الاعتماد على القيمة المنغلقة.",
+            exp_en: "Functional updates access the freshest state value directly without depending on closure scope."
+        },
+        {
+            ar_q: "ما الفائدة الأساسية من استخدام timerRef (useRef) لتخزين معرف المؤقت بدلاً من useState؟",
+            en_q: "What is the primary benefit of storing the timer ID in timerRef instead of useState?",
+            options: [
+                { ar: "تسريع تنفيذ دوال الجافاسكريبت بمقدار الضعف", en: "Doubling JavaScript execution speed" },
+                { ar: "حفظ القيمة بين مرات الريندر دون التسبب في إعادة تصيير للمكون", en: "Persisting value across renders without causing unnecessary re-renders" },
+                { ar: "حماية المعرف من الحذف عند إغلاق المتصفح", en: "Protecting ID from deletion when closing the browser" },
+                { ar: "إجبار المكون على التحديث كل ثانية تلقائياً", en: "Forcing component to re-render every second" }
+            ],
+            correct: 1,
+            exp_ar: "تعديل current في useRef لا يسبب re-render، وهو مثالي لحفظ الـ ID الخاص بالمؤقتات.",
+            exp_en: "Mutating useRef.current does not trigger a re-render, making it ideal for timer references."
+        },
+        {
+            ar_q: "ما القيمة الابتدائية التي يحملها timerRef.current عند بداية تحميل المكون لأول مرة؟",
+            en_q: "What initial value does timerRef.current hold upon the initial mount of the component?",
+            options: [
+                { ar: "0", en: "0" },
+                { ar: "undefined", en: "undefined" },
+                { ar: "null", en: "null" },
+                { ar: "false", en: "false" }
+            ],
+            correct: 2,
+            exp_ar: "تم تمرير null كوسيط ابتدائي داخل ()useRef في السطر الخاص بتعريف timerRef.",
+            exp_en: "null was explicitly passed as the initial argument to useRef(null)."
+        },
+        {
+            ar_q: "دالة التنظيف (cleanup function) المعادة من الـ useEffect الأول: متى يتم استدعاؤها؟",
+            en_q: "When is the cleanup function returned by the first useEffect executed?",
+            options: [
+                { ar: "عند تغير isActive أو قبل تفكيك المكون (unmount)", en: "When isActive changes or right before component unmounts" },
+                { ar: "مع كل ضغطة زر داخل الصفحة فقط", en: "Only on every user button click" },
+                { ar: "مرة واحدة فقط عند بداية تحميل المكون", en: "Once on initial component mount" },
+                { ar: "فقط عندما يصل العداد إلى 60 ثانية", en: "Only when the counter hits 60 seconds" }
+            ],
+            correct: 0,
+            exp_ar: "دالة التنظيف تنفذ لتنظيف التأثير السابق عند تغير مصفوفة الاعتماد [isActive] وكذلك عند unmount.",
+            exp_en: "Cleanup functions execute prior to re-running the effect due to dependency change and on unmount."
+        },
+        {
+            ar_q: "إذا كانت قيمة isActive هي false وقيمة taskName هي 'برمجة'، فماذا سيكون عنوان الصفحة (document.title)؟",
+            en_q: "If isActive is false and taskName is 'برمجة', what will document.title be?",
+            options: [
+                { ar: "برمجة || 0ث", en: "برمجة || 0ث" },
+                { ar: "مؤقت المهام", en: "مؤقت المهام" },
+                { ar: "undefined", en: "undefined" },
+                { ar: "فارغ (بلا عنوان)", en: "Empty string" }
+            ],
+            correct: 1,
+            exp_ar: "الشرط يشترط وجود الاثنين معاً (isActive && taskName)؛ وإذا كان أحدهما false ينتقل لشرط else ويضع 'مؤقت المهام'.",
+            exp_en: "The if condition checks (isActive && taskName); failing it triggers the else branch setting 'مؤقت المهام'."
+        },
+        {
+            ar_q: "ما الغرض المتوقع لتعريف inputRef في الكود على الرغم من عدم وجود كود JSX مكمل له؟",
+            en_q: "What is the intended purpose of inputRef despite missing JSX markup in the snippet?",
+            options: [
+                { ar: "حساب عدد الحروف المكتوبة داخل الذاكرة", en: "Counting input characters inside memory" },
+                { ar: "تخزين مصفوفة المهام المنجزة", en: "Storing finished task arrays" },
+                { ar: "الربط مع عنصر إدخال <input> للتحكم في التركيز (focus)", en: "Attaching to an <input> element to control DOM focus" },
+                { ar: "تأخير تشغيل المؤقت لبضع ثوانٍ", en: "Delaying timer execution for seconds" }
+            ],
+            correct: 2,
+            exp_ar: "يستخدم useRef مع عناصر الإدخال عادة للوصول المباشر للـ DOM مثل عمل focus أو قراءة القيمة.",
+            exp_en: "useRef is typically passed to input tags to manage imperative DOM interactions like focusing."
+        },
+        {
+            ar_q: "الـ useEffect الثاني المسؤول عن عنوان الصفحة: متى يُعاد تنفيذه؟",
+            en_q: "When does the second useEffect (managing document.title) re-run?",
+            options: [
+                { ar: "عند أول تصيير للمكون فقط", en: "Only on initial component render" },
+                { ar: "عند تغير taskName أو isActive أو seconds", en: "Whenever taskName, isActive, or seconds updates" },
+                { ar: "عند النقر على زر المؤقت فقط", en: "Only when clicking the timer button" },
+                { ar: "كل دقيقة كاملة بانتظام", en: "Regularly every full minute" }
+            ],
+            correct: 1,
+            exp_ar: "مصفوفة الاعتماديات تضم [taskName, isActive, seconds]، وبالتالي أي تغيير في إحداها يعيد تنفيذ الـ Effect.",
+            exp_en: "Its dependency array includes all three states, re-executing upon any change to them."
+        },
+        {
+            ar_q: "ما نوع البيانات الابتدائي للمتغير taskName في الكود؟",
+            en_q: "What is the initial data type of the taskName state variable?",
+            options: [
+                { ar: "مصفوفة فارغة", en: "Empty Array" },
+                { ar: "قيمة منطقية", en: "Boolean" },
+                { ar: "نص فارغ", en: "Empty String" },
+                { ar: "قيمة خالية (null)", en: "Null" }
+            ],
+            correct: 2,
+            exp_ar: "تم تمرير نص فارغ '' داخل useState('') أثناء تعريف taskName.",
+            exp_en: "useState('') initializes taskName to an empty string primitive."
+        },
+        {
+            ar_q: "في الـ useEffect الأول، إذا تغيرت isActive من true إلى false، ما الجزء الذي يتولى إيقاف المؤقت؟",
+            en_q: "In the first effect, when isActive flips from true to false, what halts the timer interval?",
+            options: [
+                { ar: "تنفيذ دالة التنظيف (cleanup) وكتلة else معاً لحذف المعرف", en: "Both the cleanup return function and the else block invoke clearInterval" },
+                { ar: "نظام التشغيل تلقائياً دون استدعاء دوال", en: "Operating system interrupts without function calls" },
+                { ar: "الـ useEffect الثاني فقط", en: "Exclusively the second useEffect" },
+                { ar: "دالة setSeconds تلقائياً", en: "setSeconds automatically" }
+            ],
+            correct: 0,
+            exp_ar: "دالة التنظيف للـ effect السابق تستدعي clearInterval، وكذلك يدخل الـ effect الجديد في كتلة else ويستدعي clearInterval أيضاً.",
+            exp_en: "The cleanup of the previous active effect runs clearInterval, and the newly triggered run enters the else clause."
+        },
+        {
+            ar_q: "ماذا ينقص المكون App المكتوب حتى يكون مكون React صالحاً تماماً للعرض على الشاشة؟",
+            en_q: "What is fundamentally missing in the App component to make it a valid renderable React component?",
+            options: [
+                { ar: "استدعاء دالة useMemo", en: "Calling useMemo hook" },
+                { ar: "جملة إرجاع لواجهة المستخدم: return ( ... JSX ... )", en: "A return statement delivering UI JSX markup" },
+                { ar: "حذف السطر الأخير الخاص بالتصدير", en: "Removing export default statement" },
+                { ar: "تحويل أسماء المتغيرات إلى أحرف كبيرة", en: "Capitalizing all variable identifiers" }
+            ],
+            correct: 1,
+            exp_ar: "المكون لا يحتوي على جملة return لإرجاع عناصر JSX ليتم رسمها على الشاشة.",
+            exp_en: "The component lacks a return statement providing JSX to render to the DOM."
+        },
+        {
+            ar_q: "هل يؤدي استدعاء setIsActive(true) إلى إعادة تصيير (Re-render) المكون؟",
+            en_q: "Does invoking setIsActive(true) trigger a component re-render?",
+            options: [
+                { ar: "نعم، لأن تحديث حالة useState يجدول إعادة تصيير للمكون", en: "Yes, because updating useState schedules a component re-render" },
+                { ar: "لا، لأن المكونات الوظيفية لا يُعاد تصييرها بعد التحميل", en: "No, functional components do not re-render after mounting" },
+                { ar: "نعم، ولكن فقط إذا كان المتصفح يدعم الـ Hooks", en: "Yes, but strictly if browser supports hooks" },
+                { ar: "لا، إلا إذا كانت seconds أكبر من 10", en: "No, unless seconds exceeds 10" }
+            ],
+            correct: 0,
+            exp_ar: "دوال تعديل الحالة المنبثقة من useState تؤدي لتحديث الحالة وإعادة تصيير المكون بالقيم الجديدة.",
+            exp_en: "Invoking a useState updater function schedules a re-render of the component."
+        },
+        {
+            ar_q: "أي تعبير مما يلي يصف بدقة طبيعة المتغير timerRef في الجافاسكريبت؟",
+            en_q: "Which expression accurately describes the nature of timerRef in JavaScript?",
+            options: [
+                { ar: "دالة غير متزامنة (Async Function)", en: "Async Function" },
+                { ar: "مصفوفة تخزين ثابتة غير قابلة للتغيير", en: "Immutable Storage Array" },
+                { ar: "كائن جافاسكريبت يحتوي على خاصية قابلة للتعديل تسمى current", en: "A plain JavaScript object containing a mutable property named current" },
+                { ar: "قيمة نصية بسيطة (String)", en: "String primitive" }
+            ],
+            correct: 2,
+            exp_ar: "الدالة useRef تعيد كائناً عادياً بالشكل { current: initialValue } يظل ثابتاً طوال دورة حياة المكون.",
+            exp_en: "useRef returns a plain mutable object shaped like { current: value } persisting across renders."
+        },
+        {
+            ar_q: "ما النتيجة المتوقعة للعنوان عند تفعيل المؤقت بـ taskName قيمته 'قراءة' ووصل العداد إلى 5؟",
+            en_q: "What is document.title when the timer is active with taskName 'قراءة' and seconds equals 5?",
+            options: [
+                { ar: "قراءة || 5ث", en: "قراءة || 5ث" },
+                { ar: "مؤقت المهام", en: "مؤقت المهام" },
+                { ar: "قراءة 5 ثواني", en: "قراءة 5 ثواني" },
+                { ar: "مؤقت المهام || 5", en: "مؤقت المهام || 5" }
+            ],
+            correct: 0,
+            exp_ar: "حسب القالب النصي `${taskName} || ${seconds}ث` ستكون النتيجة 'قراءة || 5ث'.",
+            exp_en: "The template literal `${taskName} || ${seconds}ث` directly yields 'قراءة || 5ث'."
+        },
+        {
+            ar_q: "إذا قمنا بتعديل timerRef.current = 123 مباشرة، فماذا يحدث لواجهة المستخدم؟",
+            en_q: "If we directly mutate timerRef.current = 123, what immediate impact occurs on the UI?",
+            options: [
+                { ar: "يُعاد تصيير المكون وتحديث الصفحة فوراً", en: "Component re-renders and refreshes immediately" },
+                { ar: "تتغير القيمة في الذاكرة بصمت دون التسبب في إعادة تصيير المكون", en: "The value updates silently in memory without triggering a re-render" },
+                { ar: "يتم مسح قيمة seconds وإرجاعها للصفر", en: "seconds state resets to zero" },
+                { ar: "يحدث خطأ تجميد للمتصفح (Memory Leak)", en: "A browser-freezing memory leak occurs" }
+            ],
+            correct: 1,
+            exp_ar: "تعديل مراجع useRef لا يطلق أي عمليات render في React على الإطلاق.",
+            exp_en: "Direct mutations to ref.current never notify React to schedule a re-render."
+        },
+        {
+            ar_q: "ما الوظيفة الأساسية للـ Hook المسمى useEffect في مكتبة React عموماً؟",
+            en_q: "What is the primary role of the useEffect hook in React?",
+            options: [
+                { ar: "بناء ملفات التنسيق CSS ديناميكياً", en: "Dynamically constructing CSS files" },
+                { ar: "إدارة ومزامنة التأثيرات الجانبية (Side Effects) مع دورة حياة المكون", en: "Handling and synchronizing side effects with the component lifecycle" },
+                { ar: "استبدال جميع دوال الجافاسكريبت بحلقات تكرار", en: "Replacing JavaScript functions with loops" },
+                { ar: "تحسين سرعة معالجة الرسوم ثلاثية الأبعاد", en: "Optimizing 3D graphics pipeline" }
+            ],
+            correct: 1,
+            exp_ar: "يُستخدم useEffect للتعامل مع العمليات الجانبية كالمؤقتات، وتعديل الـ DOM الخارجي، وطلبات الشبكة.",
+            exp_en: "useEffect handles side effects such as subscriptions, DOM mutations, and timers outside rendering."
+        },
+        {
+            ar_q: "لماذا تم وضع taskName و isActive و seconds معاً في مصفوفة اعتماديات الـ Effect الثاني؟",
+            en_q: "Why are taskName, isActive, and seconds placed together in the second effect's dependencies?",
+            options: [
+                { ar: "لأن قواعد React تلزم بوضع أي متغير خارجي يُقرأ داخل التأثير لضمان التزامن", en: "Because React rules mandate declaring all referenced reactive values to guarantee sync" },
+                { ar: "لإلغاء عمل الـ Effect الأول تماماً", en: "To completely override the first effect" },
+                { ar: "لتجنب استهلاك مساحة في بطاقة الشاشة", en: "To prevent video card memory usage" },
+                { ar: "لأن useState تشترط ذلك للعمل", en: "Because useState requires it to work" }
+            ],
+            correct: 0,
+            exp_ar: "قواعد React تفترض وضع كل المتغيرات التفاعلية المستخدمة بالداخل لضمان عدم قراءة بيانات قديمة.",
+            exp_en: "Declaring all referenced reactive variables ensures the effect always synchronizes with fresh values."
+        },
+        {
+            ar_q: "ما الحالة الوحيدة التي تجعل الـ useEffect الثاني يُرجع عنوان التبويب إلى 'مؤقت المهام'؟",
+            en_q: "Under which specific condition does the second effect set document.title back to 'مؤقت المهام'?",
+            options: [
+                { ar: "فقط عندما يكون العداد seconds مساوياً للصفر", en: "Only when seconds equals zero" },
+                { ar: "إذا كانت isActive تساوي false أو كان taskName نصاً فارغاً", en: "Whenever isActive is false or taskName is an empty string" },
+                { ar: "فقط إذا تعطل المتصفح عن الاتصال بالإنترنت", en: "Only when browser loses internet access" },
+                { ar: "عند النقر المزدوج على عنوان الصفحة", en: "Upon double-clicking page title" }
+            ],
+            correct: 1,
+            exp_ar: "بما أن الشرط (isActive && taskName)، فإن نفي أي من الطرفين يقود مباشرة لكتلة else.",
+            exp_en: "Since the condition requires both (isActive && taskName), if either is falsy the else block executes."
+        }
+    ];
+
+    let userAnswers = new Array(questions.length).fill(null);
+    let currentIdx = 0;
+    let score = 0;
+
+    function loadScores() {
+        const storedHigh = localStorage.getItem('react_hooks_quiz_high');
+        const high = storedHigh ? parseInt(storedHigh) : 0;
+        document.getElementById('highScore').innerText = high;
+
+        const storedFirst = localStorage.getItem('react_hooks_quiz_first');
+        if (storedFirst !== null) {
+            document.getElementById('firstScore').innerText = storedFirst;
+        } else {
+            document.getElementById('firstScore').innerText = "--";
+        }
+        return { high, first: storedFirst };
+    }
+
+    function saveScores(finalScore) {
+        let isFirstTime = false;
+        if (localStorage.getItem('react_hooks_quiz_first') === null) {
+            localStorage.setItem('react_hooks_quiz_first', finalScore);
+            document.getElementById('firstScore').innerText = finalScore;
+            isFirstTime = true;
+        }
+
+        const currentHigh = parseInt(localStorage.getItem('react_hooks_quiz_high') || '0');
+        let isNewHigh = false;
+        if (finalScore > currentHigh) {
+            localStorage.setItem('react_hooks_quiz_high', finalScore);
+            document.getElementById('highScore').innerText = finalScore;
+            isNewHigh = true;
+        }
+
+        return { isFirstTime, isNewHigh };
+    }
+
+    function calculateScore() {
+        let s = 0;
+        for (let i = 0; i < questions.length; i++) {
+            if (userAnswers[i] !== null && userAnswers[i] === questions[i].correct) {
+                s++;
+            }
+        }
+        score = s;
+        document.getElementById('score').innerText = score;
+        return score;
+    }
+
+    function displayQuestion() {
+        const q = questions[currentIdx];
+        document.getElementById('qCurrent').innerText = currentIdx + 1;
+        document.getElementById('questionTextAr').innerText = (currentIdx + 1) + ". " + q.ar_q;
+        document.getElementById('questionTextEn').innerText = "Q" + (currentIdx + 1) + ": " + q.en_q;
+
+        const answeredCount = userAnswers.filter(a => a !== null).length;
+        const pct = (answeredCount / questions.length) * 100;
+        document.getElementById('progressBar').style.width = pct + '%';
+
+        const container = document.getElementById('optionsContainer');
+        container.innerHTML = '';
+
+        const expBox = document.getElementById('explanationText');
+        const statusIndicator = document.getElementById('qStatusIndicator');
+
+        const prevAns = userAnswers[currentIdx];
+
+        if (prevAns === null) {
+            statusIndicator.innerText = "لم يُجب بعد / Not answered";
+            statusIndicator.style.color = "var(--text-muted)";
+            expBox.style.display = 'none';
+        } else {
+            statusIndicator.innerText = prevAns === q.correct ? "✅ إجابة صحيحة مسجلة" : "❌ إجابة خاطئة مسجلة";
+            statusIndicator.style.color = prevAns === q.correct ? "var(--success)" : "var(--danger)";
+            showExplanation(prevAns === q.correct, prevAns);
+        }
+
+        q.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'opt-btn';
+            btn.innerHTML = `
+                <div class="opt-ar">${['أ', 'ب', 'ج', 'د'][idx]}) ${opt.ar}</div>
+                <div class="opt-en">${['A', 'B', 'C', 'D'][idx]}) ${opt.en}</div>
+            `;
+
+            if (prevAns !== null) {
+                btn.disabled = true;
+                if (idx === q.correct) {
+                    btn.classList.add('correct');
+                } else if (idx === prevAns) {
+                    btn.classList.add('wrong');
+                }
+            } else {
+                btn.onclick = () => selectAnswer(idx);
+            }
+            container.appendChild(btn);
+        });
+
+        document.getElementById('prevBtn').disabled = (currentIdx === 0);
+        document.getElementById('nextBtn').innerText = (currentIdx === questions.length - 1) ? "إنهاء الاختبار / Finish 🏁" : "التالي / Next ⬅️";
+    }
+
+    function selectAnswer(chosenIdx) {
+        if (userAnswers[currentIdx] !== null) return;
+
+        userAnswers[currentIdx] = chosenIdx;
+        calculateScore();
+
+        const q = questions[currentIdx];
+        const isCorrect = (chosenIdx === q.correct);
+
+        const buttons = document.querySelectorAll('.opt-btn');
+        buttons.forEach(b => b.disabled = true);
+
+        if (isCorrect) {
+            buttons[chosenIdx].classList.add('correct');
+        } else {
+            buttons[chosenIdx].classList.add('wrong');
+            buttons[q.correct].classList.add('correct');
+        }
+
+        showExplanation(isCorrect, chosenIdx);
+
+        const statusIndicator = document.getElementById('qStatusIndicator');
+        statusIndicator.innerText = isCorrect ? "✅ إجابة صحيحة مسجلة" : "❌ إجابة خاطئة مسجلة";
+        statusIndicator.style.color = isCorrect ? "var(--success)" : "var(--danger)";
+
+        const answeredCount = userAnswers.filter(a => a !== null).length;
+        document.getElementById('progressBar').style.width = ((answeredCount / questions.length) * 100) + '%';
+    }
+
+    function showExplanation(isCorrect, chosenIdx) {
+        const q = questions[currentIdx];
+        const expBox = document.getElementById('explanationText');
+
+        if (isCorrect) {
+            expBox.innerHTML = `
+                <b>✅ إجابة صحيحة / Correct!</b><br>
+                <div>${q.exp_ar}</div>
+                <div class="exp-en">${q.exp_en}</div>
+            `;
+            expBox.style.borderRightColor = 'var(--success)';
+        } else {
+            expBox.innerHTML = `
+                <b>❌ إجابة غير دقيقة / Incorrect!</b><br>
+                <div>الإجابة الصحيحة هي: <b>${q.options[q.correct].ar}</b></div>
+                <div class="exp-en">Correct choice: <b>${q.options[q.correct].en}</b></div>
+                <div style="margin-top: 6px;">${q.exp_ar}</div>
+                <div class="exp-en">${q.exp_en}</div>
+            `;
+            expBox.style.borderRightColor = 'var(--danger)';
+        }
+        expBox.style.display = 'block';
+    }
+
+    function nextQuestion() {
+        if (currentIdx < questions.length - 1) {
+            currentIdx++;
+            displayQuestion();
+        } else {
+            showFinalResults();
+        }
+    }
+
+    function prevQuestion() {
+        if (currentIdx > 0) {
+            currentIdx--;
+            displayQuestion();
+        }
+    }
+
+    function openIndexModal() {
+        buildIndexGrid();
+        document.getElementById('indexModal').style.display = 'flex';
+    }
+
+    function closeIndexModal() {
+        document.getElementById('indexModal').style.display = 'none';
+    }
+
+    function closeIndexModalOnOutside(e) {
+        if (e.target.id === 'indexModal') {
+            closeIndexModal();
+        }
+    }
+
+    function buildIndexGrid() {
+        const grid = document.getElementById('gridIndexContainer');
+        grid.innerHTML = '';
+
+        for (let i = 0; i < questions.length; i++) {
+            const pill = document.createElement('div');
+            pill.className = 'index-pill';
+            pill.innerText = (i + 1);
+
+            if (i === currentIdx) {
+                pill.classList.add('active');
+            }
+
+            if (userAnswers[i] !== null) {
+                if (userAnswers[i] === questions[i].correct) {
+                    pill.classList.add('solved-correct');
+                } else {
+                    pill.classList.add('solved-wrong');
+                }
+            }
+
+            pill.onclick = () => {
+                currentIdx = i;
+                displayQuestion();
+                closeIndexModal();
+            };
+
+            grid.appendChild(pill);
+        }
+    }
+
+    function showFinalResults() {
+        document.getElementById('quizCard').style.display = 'none';
+        document.getElementById('progressBar').style.width = '100%';
+
+        const resultsCard = document.getElementById('resultsCard');
+        resultsCard.style.display = 'block';
+
+        calculateScore();
+        document.getElementById('finalScore').innerText = score;
+        const res = saveScores(score);
+        const scores = loadScores();
+
+        const notice = document.getElementById('highScoreNotice');
+        const msg = document.getElementById('resultMsg');
+        const icon = document.getElementById('trophyIcon');
+
+        let textDetails = `🎯 أول محاولة مسجلة (First Attempt): ${scores.first} من 20<br>`;
+        if (res.isNewHigh && score > 0) {
+            textDetails += `🏆 مبروك! حققت رقماً قياسياً جديداً: ${score} من 20!`;
+        } else {
+            textDetails += `🏆 أعلى نتيجة على هذا الجهاز: ${scores.high} من 20`;
+        }
+        notice.innerHTML = textDetails;
+
+        if (score >= 18) {
+            msg.innerText = "ممتاز وفوق العادة! إتقان شامل لـ React Hooks";
+            icon.innerText = "👑";
+        } else if (score >= 14) {
+            msg.innerText = "جيد جداً! استيعاب قوي لمنطق المكون";
+            icon.innerText = "🎉";
+        } else if (score >= 10) {
+            msg.innerText = "مستوى متوسط، راجع مواضيع الـ Stale Closures";
+            icon.innerText = "👍";
+        } else {
+            msg.innerText = "يُنصح بمراجعة تأثيرات الاعتماديات في useEffect";
+            icon.innerText = "💡";
+        }
+    }
+
+    function restartQuiz() {
+        userAnswers = new Array(questions.length).fill(null);
+        currentIdx = 0;
+        score = 0;
+        document.getElementById('score').innerText = '0';
+        document.getElementById('resultsCard').style.display = 'none';
+        document.getElementById('quizCard').style.display = 'block';
+        displayQuestion();
+    }
+
+    window.onload = function() {
+        loadScores();
+        displayQuestion();
+    };
+</script>
+</body>
+</html>
